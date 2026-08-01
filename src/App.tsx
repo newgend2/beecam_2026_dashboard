@@ -29,10 +29,13 @@ function App() {
     return () => window.removeEventListener('hashchange', handleHashChange)
   }, [])
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
+  }, [activeTab])
+
   const navigate = useCallback((tab: DashboardTab) => {
     setActiveTab(tab)
     window.history.replaceState(null, '', `#${tab}`)
-    window.scrollTo({ top: 0, behavior: 'smooth' })
   }, [])
 
   const browseCell = (gridCell: string) => {
