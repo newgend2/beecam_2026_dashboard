@@ -1,4 +1,4 @@
-export type CameraStatus = 'nominal' | 'defective'
+export type CameraStatus = 'taken-down'
 
 export interface CameraRecord {
   gridId: 'upper' | 'lower'

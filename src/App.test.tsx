@@ -33,18 +33,19 @@ describe('BeeCam dashboard', () => {
     fireEvent.click(screen.getByRole('link', { name: 'Camera status' }))
 
     const summary = screen.getByLabelText('Camera status summary')
-    expect(within(summary).getByText('26')).toBeInTheDocument()
-    expect(within(summary).getByText('22')).toBeInTheDocument()
-    expect(within(summary).getByText('4')).toBeInTheDocument()
+    expect(within(summary).getAllByText('26')).toHaveLength(2)
+    expect(within(summary).getByText('Taken down')).toBeInTheDocument()
+    expect(within(summary).getByText('0')).toBeInTheDocument()
 
     const h4 = screen.getByRole('button', {
-      name: 'H4, Camera 17, defective',
+      name: 'H4, Camera 17, taken down',
     })
     fireEvent.keyDown(h4, { key: 'Enter' })
     expect(
       screen.getByRole('heading', { name: 'H4 · Camera 17' }),
     ).toBeInTheDocument()
     expect(h4).toHaveAttribute('aria-pressed', 'true')
+    expect(screen.getByText('Taken down following completion of the Emerald Queen field season.')).toBeInTheDocument()
   })
 
   it('opens the gallery with all cameras and frames selected by default', () => {

@@ -51,7 +51,7 @@ function App() {
             <span className="brand-mark" aria-hidden="true">B</span>
             <span><strong>BeeCam 2026</strong><small>Emerald Queen research network</small></span>
           </button>
-          <div className="season-badge"><span className="live-dot" aria-hidden="true" />Field season 2026</div>
+          <div className="season-badge"><span className="season-dot" aria-hidden="true" />Field season complete</div>
         </div>
       </header>
 

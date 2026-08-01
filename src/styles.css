@@ -107,12 +107,12 @@ a {
   font-weight: 600;
 }
 
-.live-dot {
+.season-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #5ed39d;
-  box-shadow: 0 0 0 4px rgb(94 211 157 / 14%);
+  background: var(--gold);
+  box-shadow: 0 0 0 4px rgb(225 170 40 / 14%);
 }
 
 .tab-bar {
@@ -241,20 +241,20 @@ h2 {
   font-size: 12px;
 }
 
-.summary-card--nominal {
-  border-top: 4px solid var(--green);
+.summary-card--taken-down {
+  border-top: 4px solid #68766f;
 }
 
-.summary-card--nominal strong {
-  color: var(--green-dark);
+.summary-card--taken-down strong {
+  color: #46534d;
 }
 
-.summary-card--defective {
-  border-top: 4px solid var(--red);
+.summary-card--inactive {
+  border-top: 4px solid var(--gold);
 }
 
-.summary-card--defective strong {
-  color: var(--red-dark);
+.summary-card--inactive strong {
+  color: #8a6510;
 }
 
 .content-grid {
@@ -306,12 +306,8 @@ h2 {
   border-radius: 50%;
 }
 
-.legend-dot--nominal {
-  background: var(--green);
-}
-
-.legend-dot--defective {
-  background: var(--red);
+.legend-dot--taken-down {
+  background: #68766f;
 }
 
 .map-canvas {
@@ -364,24 +360,14 @@ h2 {
   transition: fill-opacity 150ms ease, stroke-width 150ms ease;
 }
 
-.camera-cell--nominal rect {
-  fill: var(--green);
-  fill-opacity: 0.66;
+.camera-cell--taken-down rect {
+  fill: #566760;
+  fill-opacity: 0.76;
 }
 
-.camera-cell--defective rect {
-  fill: var(--red);
-  fill-opacity: 0.72;
-}
-
-.camera-cell--nominal circle {
-  fill: #8ff0c3;
-  stroke: #073f2d;
-}
-
-.camera-cell--defective circle {
-  fill: #ffe0dc;
-  stroke: #7c1e19;
+.camera-cell--taken-down circle {
+  fill: #f2c965;
+  stroke: #56420d;
 }
 
 .camera-cell:hover rect,
@@ -465,14 +451,9 @@ h2 {
   text-transform: uppercase;
 }
 
-.status-pill--nominal {
-  color: var(--green-dark);
-  background: #d9f1e6;
-}
-
-.status-pill--defective {
-  color: var(--red-dark);
-  background: #f8deda;
+.status-pill--taken-down {
+  color: #46534d;
+  background: #e5e9e5;
 }
 
 .details-list {

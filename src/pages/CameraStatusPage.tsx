@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { CameraDetails } from '../components/CameraDetails'
 import { CameraMap } from '../components/CameraMap'
 import { StatusSummary } from '../components/StatusSummary'
-import { cameras, formatCheckDate, latestCheckDate } from '../data/cameras'
+import { cameras } from '../data/cameras'
 import type { CameraRecord } from '../types'
 
 export function CameraStatusPage() {
@@ -15,9 +15,9 @@ export function CameraStatusPage() {
           <div>
             <p className="eyebrow">Network operations</p>
             <h1 id="camera-status-title">Camera grid status</h1>
-            <p>Latest field condition across the upper and lower monitoring grids.</p>
+            <p>Final deployment state across the upper and lower monitoring grids.</p>
           </div>
-          <p className="updated-at">Data current to <time dateTime={latestCheckDate}>{formatCheckDate(latestCheckDate)}</time></p>
+          <p className="updated-at">2026 field season complete</p>
         </div>
 
         <StatusSummary cameras={cameras} />
@@ -26,8 +26,7 @@ export function CameraStatusPage() {
             <div className="map-card-header">
               <div><p className="eyebrow">Emerald Queen site</p><h2 id="status-map-title">Deployment map</h2></div>
               <div className="legend" aria-label="Map legend">
-                <span><i className="legend-dot legend-dot--nominal" />Nominal</span>
-                <span><i className="legend-dot legend-dot--defective" />Defective</span>
+                <span><i className="legend-dot legend-dot--taken-down" />Taken down</span>
               </div>
             </div>
             <CameraMap cameras={cameras} selectedCell={selectedCamera.gridCell} onSelect={setSelectedCamera} />

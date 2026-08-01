@@ -22,11 +22,7 @@ describe('camera records', () => {
     expect(new Set(cameras.map(({ cameraId }) => cameraId)).size).toBe(26)
   })
 
-  it('contains only binary public statuses', () => {
-    expect(
-      cameras.every(({ status }) =>
-        ['nominal', 'defective'].includes(status),
-      ),
-    ).toBe(true)
+  it('marks every camera as taken down after the field season', () => {
+    expect(cameras.every(({ status }) => status === 'taken-down')).toBe(true)
   })
 })

@@ -5,25 +5,24 @@ interface StatusSummaryProps {
 }
 
 export function StatusSummary({ cameras }: StatusSummaryProps) {
-  const nominal = cameras.filter((camera) => camera.status === 'nominal').length
-  const defective = cameras.length - nominal
+  const takenDown = cameras.filter((camera) => camera.status === 'taken-down').length
 
   return (
     <div className="summary-grid" aria-label="Camera status summary">
       <article className="summary-card summary-card--total">
-        <span>Network</span>
+        <span>Network total</span>
         <strong>{cameras.length}</strong>
-        <small>deployed cameras</small>
+        <small>camera units</small>
       </article>
-      <article className="summary-card summary-card--nominal">
-        <span>Nominal</span>
-        <strong>{nominal}</strong>
-        <small>{Math.round((nominal / cameras.length) * 100)}% operational</small>
+      <article className="summary-card summary-card--taken-down">
+        <span>Taken down</span>
+        <strong>{takenDown}</strong>
+        <small>100% removed from site</small>
       </article>
-      <article className="summary-card summary-card--defective">
-        <span>Defective</span>
-        <strong>{defective}</strong>
-        <small>require attention</small>
+      <article className="summary-card summary-card--inactive">
+        <span>Active units</span>
+        <strong>0</strong>
+        <small>field season complete</small>
       </article>
     </div>
   )

@@ -16,15 +16,13 @@ export function CameraDetails({ camera }: CameraDetailsProps) {
           </h2>
         </div>
         <span className={`status-pill status-pill--${camera.status}`}>
-          <span aria-hidden="true">
-            {camera.status === 'nominal' ? '✓' : '!'}
-          </span>
-          {camera.status}
+          <span aria-hidden="true">—</span>
+          Taken down
         </span>
       </div>
       <dl className="details-list">
         <div>
-          <dt>Last checked</dt>
+          <dt>Last field check</dt>
           <dd>{formatCheckDate(camera.checkedAt)}</dd>
         </div>
         <div>

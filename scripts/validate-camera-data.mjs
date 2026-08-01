@@ -51,7 +51,7 @@ for (const record of records) {
       `${gridCell} must use camera ${assignments.get(gridCell)}; found ${cameraId}`,
     )
   }
-  if (!['nominal', 'defective'].includes(status)) {
+  if (status !== 'taken-down') {
     errors.push(`Invalid status for ${gridCell}: ${status}`)
   }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(checkedAt)) {

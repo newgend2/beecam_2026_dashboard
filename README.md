@@ -7,7 +7,7 @@ GitHub Pages site includes:
 - a 26-cell spatial activity map;
 - frame and unique-visit gallery modes with location and date filters;
 - location and cumulative activity analytics;
-- operational status for the two camera grids; and
+- final taken-down status for the two camera grids; and
 - curated CSV manifests and a ZIP archive of the published crops.
 
 ## Local development

@@ -48,7 +48,7 @@ export function CameraMap({
                   className={`camera-cell camera-cell--${camera.status}${selected ? ' is-selected' : ''}`}
                   role="button"
                   tabIndex={0}
-                  aria-label={`${camera.gridCell}, Camera ${camera.cameraId}, ${camera.status}`}
+                  aria-label={`${camera.gridCell}, Camera ${camera.cameraId}, taken down`}
                   aria-pressed={selected}
                   onClick={() => onSelect(camera)}
                   onKeyDown={(event) => handleKeySelect(event, camera, onSelect)}
@@ -89,7 +89,7 @@ export function CameraMap({
                     y={position.y + 84}
                     textAnchor="middle"
                   >
-                    {camera.status === 'nominal' ? 'NOMINAL' : 'DEFECTIVE'}
+                    TAKEN DOWN
                   </text>
                 </g>
               )
@@ -98,7 +98,7 @@ export function CameraMap({
         </div>
       </div>
       <p className="map-help">
-        Select a highlighted grid cell to inspect its latest field status.
+        Select a highlighted grid cell to inspect its final field-season status.
       </p>
     </div>
   )
