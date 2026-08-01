@@ -7,3 +7,4 @@ coverage/
 .codex/
 sensor_grid_status/CASensors_2026_CamCheck - Sheet1.csv
 sensor_grid_status/EmeraldQueen_130m_NAD83_map.pdf
+positives_manifests/bombus_positive_timeline_2026.csv

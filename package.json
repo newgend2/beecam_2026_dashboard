@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "validate:data": "node scripts/validate-camera-data.mjs",
+    "refresh:positives": "python3 scripts/build_positive_assets.py",
+    "validate:data": "node scripts/validate-camera-data.mjs && node scripts/validate-positive-data.mjs",
     "test": "vitest run",
     "build": "npm run validate:data && tsc -b && vite build",
     "preview": "vite preview"
