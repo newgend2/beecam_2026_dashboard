@@ -1,19 +1,19 @@
-import { assetUrl } from '../data/positives'
+import { assetUrl, positiveSummary } from '../data/positives'
 
 const downloads = [
   {
     title: 'All positive frames',
-    detail: '809 rows · CSV',
+    detail: `${positiveSummary.totalFrames.toLocaleString()} rows · CSV`,
     path: 'downloads/all_positive_frames_2026.csv',
   },
   {
     title: 'Unique visits',
-    detail: '410 rows · CSV',
+    detail: `${positiveSummary.uniqueVisits.toLocaleString()} rows · CSV`,
     path: 'downloads/unique_visits_2026.csv',
   },
   {
     title: 'Detection crop archive',
-    detail: '809 crops · ZIP · 22.8 MB',
+    detail: `${positiveSummary.totalFrames.toLocaleString()} crops · ZIP · 48.2 MB`,
     path: 'downloads/beecam_positive_crops_2026.zip',
   },
 ]

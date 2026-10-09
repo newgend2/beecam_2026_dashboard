@@ -7,6 +7,7 @@ import {
   positiveVisits,
   visitRepresentativeFrame,
 } from '../data/positives'
+import modelStats from '../data/model-stats.json'
 import type { DashboardTab, PositiveVisit } from '../types'
 
 interface HomePageProps {
@@ -52,7 +53,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
             Explore positive detections and unique visits across a distributed
             network of AI-enabled field cameras.
           </p>
-          <div className="hero-stats" aria-label="Positive detection summary">
+          <div className="hero-stats hero-stats--three" aria-label="Positive detection summary">
             <article>
               <strong>{positiveSummary.totalFrames.toLocaleString()}</strong>
               <span>positive frames</span>
@@ -60,6 +61,10 @@ export function HomePage({ onNavigate }: HomePageProps) {
             <article>
               <strong>{positiveSummary.uniqueVisits.toLocaleString()}</strong>
               <span>unique visits</span>
+            </article>
+            <article>
+              <strong>{(modelStats.imagesRecorded.value / 1e6).toFixed(1)}M</strong>
+              <span>images recorded</span>
             </article>
           </div>
           <div className="hero-actions">

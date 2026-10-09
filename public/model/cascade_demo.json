@@ -1,0 +1,73 @@
+{
+  "pipeline": "r4_20261009",
+  "pipeline_sha256": "f2def35a12eb7b18abb2cf5bcd4804245246b65b50530e0cd2039cba190a2a56",
+  "device": "cpu (detector half=False)",
+  "frames": 1220,
+  "fps": 24,
+  "images": [
+    {
+      "camera": "cam1",
+      "date": "2026-06-01",
+      "split": "train",
+      "truth": "bombus",
+      "decision": "bombus",
+      "p_bombus": 0.995923
+    },
+    {
+      "camera": "cam3",
+      "date": "2026-05-22",
+      "split": "train",
+      "truth": "other_insect",
+      "decision": "other_insect",
+      "p_bombus": 0.000111
+    },
+    {
+      "camera": "cam26",
+      "date": "2026-06-17",
+      "split": "train",
+      "truth": "bombus",
+      "decision": "bombus",
+      "p_bombus": 0.998196
+    },
+    {
+      "camera": "cam4",
+      "date": "2026-05-20",
+      "split": "train",
+      "truth": "other_insect",
+      "decision": "other_insect",
+      "p_bombus": 3.6e-05
+    },
+    {
+      "camera": "cam4",
+      "date": "2026-06-26",
+      "split": "train",
+      "truth": "bombus",
+      "decision": "bombus",
+      "p_bombus": 0.999792
+    },
+    {
+      "camera": "cam1",
+      "date": "2026-05-23",
+      "split": "train",
+      "truth": "other_insect",
+      "decision": "other_insect",
+      "p_bombus": 0.001811
+    },
+    {
+      "camera": "cam2",
+      "date": "2026-05-22",
+      "split": "train",
+      "truth": "bombus",
+      "decision": "bombus",
+      "p_bombus": 0.999484
+    },
+    {
+      "camera": "cam2",
+      "date": "2026-06-01",
+      "split": "train",
+      "truth": "other_insect",
+      "decision": "other_insect",
+      "p_bombus": 0.00104
+    }
+  ]
+}

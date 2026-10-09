@@ -1,0 +1,61 @@
+{
+  "asOf": "2026-10-09",
+  "imagesRecorded": {
+    "value": 3289982,
+    "cameraDays": 1015,
+    "dateMin": "2026-05-02",
+    "dateMax": "2026-08-23",
+    "source": "Raw 2026 camera ZIPs: 62 May–June ZIPs on the lab NAS (1,176,407 JPEGs) and 84 June–August ZIPs on the Expansion drive (2,118,606 JPEGs), de-duplicated by camera-day. Counted from the ZIP central directories (bombus_cascade data/lineage/raw_archive_check and runs/testset/expansion_zip_inventory.jsonl)."
+  },
+  "humanReviewed": {
+    "value": 17670,
+    "annotated": 7970,
+    "background": 9700,
+    "source": "bombus_cascade live manifest (reassign_20261009T154512.csv), 2026 rows with review_state annotated or reviewed_negative."
+  },
+  "confirmedBombus": {
+    "frames": 1715,
+    "boxes": 1725,
+    "events": 431,
+    "source": "bombus_cascade live manifest, 2026 annotated rows outside the excluded split with at least one human Bombus (class 0) box. Exported by scripts/export_cascade_positives.py."
+  },
+  "results": [
+    {
+      "label": "Current pipeline (round 4)",
+      "kind": "development",
+      "data": "Field development days",
+      "images": 2330,
+      "tp": 247,
+      "fp": 14,
+      "fn": 12
+    },
+    {
+      "label": "Round 3 pipeline",
+      "kind": "held-out",
+      "data": "Test cohort v3, 20 unseen camera-days",
+      "images": 1253,
+      "tp": 114,
+      "fp": 10,
+      "fn": 9
+    },
+    {
+      "label": "October 6 baseline cascade",
+      "kind": "held-out",
+      "data": "Test cohort v3, 20 unseen camera-days",
+      "images": 1253,
+      "tp": 111,
+      "fp": 31,
+      "fn": 12
+    },
+    {
+      "label": "Current pipeline (round 4)",
+      "kind": "held-out",
+      "data": "Test cohort v4, 18 unseen camera-days",
+      "images": 1035,
+      "tp": 63,
+      "fp": 19,
+      "fn": 4
+    }
+  ],
+  "resultsSource": "bombus_cascade docs/STATE.md (rounds 3 and 4). Each held-out cohort was evaluated once with a frozen pipeline, then retired."
+}
