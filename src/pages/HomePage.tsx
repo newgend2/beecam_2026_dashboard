@@ -63,7 +63,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
               <span>unique visits</span>
             </article>
             <article>
-              <strong>{(modelStats.imagesRecorded.value / 1e6).toFixed(1)}M</strong>
+              <strong>~{Math.round(modelStats.imagesRecorded.value / 1e6)}M</strong>
               <span>images recorded</span>
             </article>
           </div>

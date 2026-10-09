@@ -18,7 +18,7 @@ const steps = [
   },
   {
     title: 'A permissive trigger',
-    body: `The on-camera model proved very permissive: wind-blown debris triggered many false detections. The 2026 season produced ${(modelStats.imagesRecorded.value / 1e6).toFixed(1)} million saved frames, far more than anyone can review, so we needed a model that finds only Bombus.`,
+    body: `The on-camera model proved very permissive: wind-blown debris triggered many false detections. The 2026 season produced about ${Math.round(modelStats.imagesRecorded.value / 1e6)} million saved frames, far more than anyone can review, so we needed a model that finds only Bombus.`,
   },
   {
     title: 'Why full-image Bombus detection fell short',
@@ -55,8 +55,8 @@ export function ModelPage() {
       <section className="analytics-kpis model-kpis" aria-label="Model data summary">
         <article>
           <span>Images recorded</span>
-          <strong>{modelStats.imagesRecorded.value.toLocaleString()}</strong>
-          <small>2026 season · {modelStats.imagesRecorded.cameraDays.toLocaleString()} camera-days</small>
+          <strong>~{Math.round(modelStats.imagesRecorded.value / 1e6)} million</strong>
+          <small>2026 season estimate · {modelStats.imagesRecorded.countedInStorage.toLocaleString()} transferred so far</small>
         </article>
         <article>
           <span>Human-reviewed images</span>
@@ -146,9 +146,8 @@ export function ModelPage() {
         </div>
         <p className="demo-caption">
           Development days are used to choose models and thresholds. Held-out cohorts are camera-days
-          no model had seen; each was scored once with a frozen pipeline and then retired. Most of the
-          round 4 false alarms on cohort v4 were blurry insects that reviewers confirmed were not Bombus.
-          Our target is above 98% precision and recall on held-out data.
+          no model had seen, scored once with a frozen pipeline. Refinement continues, especially on
+          blurry frames, toward our target of above 98% precision and recall on held-out data.
         </p>
       </section>
 

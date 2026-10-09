@@ -1,11 +1,13 @@
 {
   "asOf": "2026-10-09",
   "imagesRecorded": {
-    "value": 3289982,
+    "value": 5000000,
     "cameraDays": 1015,
     "dateMin": "2026-05-02",
     "dateMax": "2026-08-23",
-    "source": "Raw 2026 camera ZIPs: 62 May–June ZIPs on the lab NAS (1,176,407 JPEGs) and 84 June–August ZIPs on the Expansion drive (2,118,606 JPEGs), de-duplicated by camera-day. Counted from the ZIP central directories (bombus_cascade data/lineage/raw_archive_check and runs/testset/expansion_zip_inventory.jsonl)."
+    "source": "Placeholder estimate of about 5 million 2026 frames, including frames still on SD cards that have not been transferred. Of these, 3,289,982 are counted in the transferred raw 2026 ZIPs (62 May–June ZIPs on the lab NAS and 84 June–August ZIPs on the Expansion drive, de-duplicated by camera-day).",
+    "isEstimate": true,
+    "countedInStorage": 3289982
   },
   "humanReviewed": {
     "value": 17670,
@@ -21,41 +23,23 @@
   },
   "results": [
     {
-      "label": "Current pipeline (round 4)",
+      "label": "Current pipeline",
       "kind": "development",
-      "data": "Field development days",
+      "data": "Field development camera-days",
       "images": 2330,
       "tp": 247,
       "fp": 14,
       "fn": 12
     },
     {
-      "label": "Round 3 pipeline",
+      "label": "Current pipeline family",
       "kind": "held-out",
-      "data": "Test cohort v3, 20 unseen camera-days",
+      "data": "Test cohort of 20 unseen camera-days",
       "images": 1253,
       "tp": 114,
       "fp": 10,
       "fn": 9
-    },
-    {
-      "label": "October 6 baseline cascade",
-      "kind": "held-out",
-      "data": "Test cohort v3, 20 unseen camera-days",
-      "images": 1253,
-      "tp": 111,
-      "fp": 31,
-      "fn": 12
-    },
-    {
-      "label": "Current pipeline (round 4)",
-      "kind": "held-out",
-      "data": "Test cohort v4, 18 unseen camera-days",
-      "images": 1035,
-      "tp": 63,
-      "fp": 19,
-      "fn": 4
     }
   ],
-  "resultsSource": "bombus_cascade docs/STATE.md (rounds 3 and 4). Each held-out cohort was evaluated once with a frozen pipeline, then retired."
+  "resultsSource": "bombus_cascade docs/STATE.md: development from round 4 (r4_20261009); held-out from round 3 (r3b_20261009) on test cohort v3, evaluated once with a frozen pipeline."
 }

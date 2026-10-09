@@ -90,7 +90,7 @@ describe('BeeCam dashboard', () => {
 
     expect(screen.getByRole('heading', { name: 'Teaching a model to find Bombus' })).toBeInTheDocument()
     const summary = screen.getByLabelText('Model data summary')
-    expect(within(summary).getByText('3,289,982')).toBeInTheDocument()
+    expect(within(summary).getByText('~5 million')).toBeInTheDocument()
     expect(within(summary).getByText('1,715')).toBeInTheDocument()
     expect(screen.getByLabelText(/Demonstration of the two-stage model/)).toHaveAttribute(
       'src',
