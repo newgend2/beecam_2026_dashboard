@@ -1931,7 +1931,29 @@ footer span {
 }
 
 .hero-stats--three {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: 1fr;
+}
+
+.hero-stats--three article {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 0;
+}
+
+.hero-stats--three article + article {
+  padding-left: 0;
+  border-top: 1px solid var(--line);
+  border-left: 0;
+}
+
+.hero-stats--three strong {
+  min-width: 4.2ch;
+  font-size: clamp(36px, 4vw, 52px);
+}
+
+.hero-stats--three span {
+  margin-top: 0;
 }
 
 @media (max-width: 900px) {
