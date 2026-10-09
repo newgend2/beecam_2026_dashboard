@@ -1,0 +1,45 @@
+{
+  "asOf": "2026-10-09",
+  "imagesRecorded": {
+    "value": 5000000,
+    "cameraDays": 1015,
+    "dateMin": "2026-05-02",
+    "dateMax": "2026-08-23",
+    "source": "Placeholder estimate of about 5 million 2026 frames, including frames still on SD cards that have not been transferred. Of these, 3,289,982 are counted in the transferred raw 2026 ZIPs (62 May–June ZIPs on the lab NAS and 84 June–August ZIPs on the Expansion drive, de-duplicated by camera-day).",
+    "isEstimate": true,
+    "countedInStorage": 3289982
+  },
+  "humanReviewed": {
+    "value": 17670,
+    "annotated": 7970,
+    "background": 9700,
+    "source": "bombus_cascade live manifest (reassign_20261009T154512.csv), 2026 rows with review_state annotated or reviewed_negative."
+  },
+  "confirmedBombus": {
+    "frames": 1715,
+    "boxes": 1725,
+    "events": 431,
+    "source": "bombus_cascade live manifest, 2026 annotated rows outside the excluded split with at least one human Bombus (class 0) box. Exported by scripts/export_cascade_positives.py."
+  },
+  "results": [
+    {
+      "label": "Round 4 cascade",
+      "kind": "development",
+      "data": "Field development camera-days",
+      "images": 2330,
+      "tp": 247,
+      "fp": 14,
+      "fn": 12
+    },
+    {
+      "label": "Round 3 cascade",
+      "kind": "held-out",
+      "data": "Test cohort of 20 unseen camera-days",
+      "images": 1253,
+      "tp": 114,
+      "fp": 10,
+      "fn": 9
+    }
+  ],
+  "resultsSource": "bombus_cascade docs/STATE.md: development from round 4 (r4_20261009); held-out from round 3 (r3b_20261009) on test cohort v3, evaluated once with a frozen pipeline."
+}

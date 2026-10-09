@@ -254,8 +254,11 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
         boxes = json.loads(row["boxes"])
         bounds = crop_bounds(boxes, width, height)
         filename = crop_filename(camera_id, row["captured_at"])
-        if filename in filenames:
-            raise ValueError(f"Duplicate public crop filename: {filename}")
+        # Archive-cohort frames carry whole-second timestamps, so a burst can share one.
+        suffix = 1
+        while filename in filenames:
+            suffix += 1
+            filename = crop_filename(camera_id, row["captured_at"]).replace(".webp", f"_{suffix}.webp")
         filenames.add(filename)
         target = temporary_crop_dir / filename
         crop_width, crop_height = create_crop(source, target, bounds)

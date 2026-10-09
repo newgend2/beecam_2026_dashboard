@@ -3,6 +3,7 @@ import { AnalyticsPage } from './pages/AnalyticsPage'
 import { CameraStatusPage } from './pages/CameraStatusPage'
 import { GalleryPage } from './pages/GalleryPage'
 import { HomePage } from './pages/HomePage'
+import { ModelPage } from './pages/ModelPage'
 import { PositiveMapPage } from './pages/PositiveMapPage'
 import type { DashboardTab } from './types'
 
@@ -11,6 +12,7 @@ const tabs: Array<{ id: DashboardTab; label: string }> = [
   { id: 'map', label: 'Camera map' },
   { id: 'gallery', label: 'Gallery' },
   { id: 'analytics', label: 'Analytics' },
+  { id: 'model', label: 'Model training' },
   { id: 'status', label: 'Camera status' },
 ]
 
@@ -80,11 +82,12 @@ function App() {
         <GalleryPage initialCell={galleryCell} onFilterConsumed={() => setGalleryCell(undefined)} />
       )}
       {activeTab === 'analytics' && <AnalyticsPage />}
+      {activeTab === 'model' && <ModelPage />}
       {activeTab === 'status' && <CameraStatusPage />}
 
       <footer>
         <p>BeeCam 2026 · Bumble bee monitoring research</p>
-        <span>Emerald Queen · British Columbia</span>
+        <span>Emerald Queen · Willow Creek, California</span>
       </footer>
     </>
   )

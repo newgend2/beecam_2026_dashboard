@@ -59,5 +59,5 @@ export interface LocationSummary {
   visits: number
 }
 
-export type DashboardTab = 'home' | 'map' | 'gallery' | 'analytics' | 'status'
+export type DashboardTab = 'home' | 'map' | 'gallery' | 'analytics' | 'model' | 'status'
 export type PositiveMetric = 'frames' | 'visits'
