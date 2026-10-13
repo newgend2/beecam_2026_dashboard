@@ -18,14 +18,14 @@ describe('BeeCam dashboard', () => {
       screen.getByRole('heading', { name: 'Bumble bees, frame by frame.' }),
     ).toBeInTheDocument()
     const summary = screen.getByLabelText('Positive detection summary')
-    expect(within(summary).getByText('1,715')).toBeInTheDocument()
-    expect(within(summary).getByText('629')).toBeInTheDocument()
+    expect(within(summary).getByText('5,601')).toBeInTheDocument()
+    expect(within(summary).getByText('1,491')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /All positive frames/ })).toHaveAttribute(
       'href',
       expect.stringContaining('all_positive_frames_2026.csv'),
     )
     expect(screen.getByRole('link', { name: /Unique visits/ })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /Detection crop archive/ })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /Detection crops, May/ })).toBeInTheDocument()
   })
 
   it('navigates to the camera-status view and supports keyboard selection', () => {
@@ -57,7 +57,7 @@ describe('BeeCam dashboard', () => {
       'true',
     )
     expect(screen.getByRole('combobox', { name: 'Camera location' })).toHaveValue('all')
-    expect(screen.getByText('1,715 positive frames')).toBeInTheDocument()
+    expect(screen.getByText('5,601 positive frames')).toBeInTheDocument()
     expect(screen.getByText('Showing 48')).toBeInTheDocument()
 
     fireEvent.click(screen.getAllByRole('button', { name: /^Open detection from/ })[0])
@@ -74,14 +74,14 @@ describe('BeeCam dashboard', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('link', { name: 'Camera map' }))
 
-    const f3 = screen.getByRole('button', { name: 'F3 · Camera 5, 45 frames' })
+    const f3 = screen.getByRole('button', { name: 'F3 · Camera 5, 269 frames' })
     fireEvent.keyDown(f3, { key: ' ' })
     expect(f3).toHaveAttribute('aria-pressed', 'true')
     expect(screen.getByRole('heading', { name: 'F3 · Camera 5' })).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Open filtered gallery' }))
     expect(screen.getByRole('combobox', { name: 'Camera location' })).toHaveValue('F3')
-    expect(screen.getByText('45 positive frames')).toBeInTheDocument()
+    expect(screen.getByText('269 positive frames')).toBeInTheDocument()
   })
 
   it('explains the model on its own tab with the demo video and labelled results', () => {
@@ -91,7 +91,7 @@ describe('BeeCam dashboard', () => {
     expect(screen.getByRole('heading', { name: 'Teaching a model to find Bombus' })).toBeInTheDocument()
     const summary = screen.getByLabelText('Model data summary')
     expect(within(summary).getByText('~5 million')).toBeInTheDocument()
-    expect(within(summary).getByText('1,715')).toBeInTheDocument()
+    expect(within(summary).getByText('5,601')).toBeInTheDocument()
     expect(screen.getByLabelText(/Demonstration of the two-stage model/)).toHaveAttribute(
       'src',
       expect.stringContaining('model/cascade_demo.mp4'),

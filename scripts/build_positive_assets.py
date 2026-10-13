@@ -31,7 +31,12 @@ DOWNLOAD_DIR = ROOT / "public" / "downloads"
 DATA_OUTPUT = ROOT / "src" / "data" / "positive-data.json"
 ALL_FRAMES_OUTPUT = DOWNLOAD_DIR / "all_positive_frames_2026.csv"
 UNIQUE_VISITS_OUTPUT = DOWNLOAD_DIR / "unique_visits_2026.csv"
-ZIP_OUTPUT = DOWNLOAD_DIR / "beecam_positive_crops_2026.zip"
+ZIP_OUTPUTS = {  # split by month so each archive stays under GitHub's 100 MB file limit
+    DOWNLOAD_DIR / "beecam_positive_crops_2026_may.zip": lambda name: name.split("_")[1][:6] == "202605",
+    DOWNLOAD_DIR / "beecam_positive_crops_2026_jun.zip": lambda name: name.split("_")[1][:6] == "202606",
+    DOWNLOAD_DIR / "beecam_positive_crops_2026_jul_aug.zip": lambda name: name.split("_")[1][:6] >= "202607",
+}
+
 VISIT_GAP_SECONDS = 2.0
 PADDING_PIXELS = 200
 
@@ -213,9 +218,11 @@ def write_csv(path: Path, fieldnames: list[str], rows: list[dict[str, object]]) 
         writer.writerows(rows)
 
 
-def build_zip(crop_dir: Path, output: Path) -> None:
+def build_zip(crop_dir: Path, output: Path, keep=lambda name: True) -> None:
     with zipfile.ZipFile(output, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=6) as archive:
         for crop in sorted(crop_dir.glob("*.webp")):
+            if not keep(crop.name):
+                continue
             info = zipfile.ZipInfo(f"crops/{crop.name}", date_time=(2026, 1, 1, 0, 0, 0))
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o644 << 16
@@ -362,14 +369,18 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
     if CROP_DIR.exists():
         shutil.rmtree(CROP_DIR)
     temporary_crop_dir.rename(CROP_DIR)
-    build_zip(CROP_DIR, ZIP_OUTPUT)
+    old_zip = DOWNLOAD_DIR / "beecam_positive_crops_2026.zip"
+    if old_zip.exists():
+        old_zip.unlink()
+    for output, keep in ZIP_OUTPUTS.items():
+        build_zip(CROP_DIR, output, keep)
 
     digest = hashlib.sha256(manifest.read_bytes()).hexdigest()
     return {
         "frames": len(frames),
         "visits": len(visits),
         "crop_bytes": sum(path.stat().st_size for path in CROP_DIR.glob("*.webp")),
-        "zip_bytes": ZIP_OUTPUT.stat().st_size,
+        "zip_bytes": {output.name: output.stat().st_size for output in ZIP_OUTPUTS},
         "source_manifest_sha256": digest,
     }
 
