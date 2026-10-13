@@ -6,16 +6,16 @@ const data = JSON.parse(
 )
 const errors = []
 
-if (data.summary.totalFrames !== 1715) errors.push(`Expected 1715 frames; found ${data.summary.totalFrames}`)
-if (data.summary.uniqueVisits !== 629) errors.push(`Expected 629 visits; found ${data.summary.uniqueVisits}`)
+if (data.summary.totalFrames !== 5601) errors.push(`Expected 5601 frames; found ${data.summary.totalFrames}`)
+if (data.summary.uniqueVisits !== 1491) errors.push(`Expected 1491 visits; found ${data.summary.uniqueVisits}`)
 if (data.frames.length !== data.summary.totalFrames) errors.push('Frame summary does not match frame records')
 if (data.visits.length !== data.summary.uniqueVisits) errors.push('Visit summary does not match visit records')
 
 const cropNames = new Set(data.frames.map((frame) => frame.cropPath.split('/').at(-1)))
 const cropDirectory = new URL('public/positives/crops/', root)
 const cropFiles = (await readdir(cropDirectory)).filter((name) => name.endsWith('.webp'))
-if (cropNames.size !== 1715 || cropFiles.length !== 1715) {
-  errors.push(`Expected 1715 unique crop files; JSON=${cropNames.size}, files=${cropFiles.length}`)
+if (cropNames.size !== 5601 || cropFiles.length !== 5601) {
+  errors.push(`Expected 5601 unique crop files; JSON=${cropNames.size}, files=${cropFiles.length}`)
 }
 
 for (const frame of data.frames) {
@@ -27,7 +27,7 @@ for (const frame of data.frames) {
 }
 
 const representatives = data.frames.filter((frame) => frame.isRepresentative)
-if (representatives.length !== 629) errors.push(`Expected 629 representative frames; found ${representatives.length}`)
+if (representatives.length !== 1491) errors.push(`Expected 1491 representative frames; found ${representatives.length}`)
 
 const privateFields = ['source_path', 'image_id', 'event_id', 'camera_period']
 for (const filename of ['all_positive_frames_2026.csv', 'unique_visits_2026.csv']) {
@@ -38,8 +38,11 @@ for (const filename of ['all_positive_frames_2026.csv', 'unique_visits_2026.csv'
   }
 }
 
-const archive = await stat(new URL('public/downloads/beecam_positive_crops_2026.zip', root))
-if (archive.size === 0) errors.push('Crop ZIP is empty')
+for (const part of ['may', 'jun', 'jul_aug']) {
+  const archive = await stat(new URL(`public/downloads/beecam_positive_crops_2026_${part}.zip`, root))
+  if (archive.size === 0) errors.push(`Crop ZIP ${part} is empty`)
+  if (archive.size > 100 * 1024 * 1024) errors.push(`Crop ZIP ${part} exceeds GitHub's 100 MB file limit`)
+}
 
 if (errors.length) {
   console.error(`Positive data validation failed:\n- ${errors.join('\n- ')}`)

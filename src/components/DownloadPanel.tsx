@@ -12,9 +12,19 @@ const downloads = [
     path: 'downloads/unique_visits_2026.csv',
   },
   {
-    title: 'Detection crop archive',
-    detail: `${positiveSummary.totalFrames.toLocaleString()} crops · ZIP · 48.2 MB`,
-    path: 'downloads/beecam_positive_crops_2026.zip',
+    title: 'Detection crops, May',
+    detail: `ZIP · 33.1 MB`,
+    path: 'downloads/beecam_positive_crops_2026_may.zip',
+  },
+  {
+    title: 'Detection crops, June',
+    detail: `ZIP · 54.7 MB`,
+    path: 'downloads/beecam_positive_crops_2026_jun.zip',
+  },
+  {
+    title: 'Detection crops, July–August',
+    detail: `ZIP · 56.9 MB`,
+    path: 'downloads/beecam_positive_crops_2026_jul_aug.zip',
   },
 ]
 
