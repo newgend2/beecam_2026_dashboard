@@ -21,7 +21,7 @@ CASCADE = Path.home() / "Desktop" / "beecam_2026" / "bombus_cascade"
 OUTPUT = ROOT / "positives_manifests" / "bombus_positive_timeline_2026.csv"
 SUMMARY = ROOT / "positives_manifests" / "cascade_export_summary.json"
 BOMBUS_CLASS = "0"
-FIELDS = ["image_id", "site", "camera", "date", "captured_at", "event_id", "camera_period", "source_path", "width", "height", "boxes"]
+FIELDS = ["image_id", "site", "camera", "date", "captured_at", "event_id", "camera_period", "source_path", "width", "height", "boxes", "aruco"]
 
 
 def live_manifest(cascade: Path) -> Path:
@@ -55,11 +55,17 @@ def main() -> int:
     csv.field_size_limit(sys.maxsize)
 
     rows = []
+    skipped_test = 0
     with manifest.open(newline="", encoding="utf-8") as handle:
         for row in csv.DictReader(handle):
             if row["year"] != "2026" or row["review_state"] != "annotated" or row["split"] == "excluded":
                 continue
             if not row["label_path"]:
+                continue
+            aliases = json.loads(row["source_aliases"] or "{}")
+            tags = set(aliases.get("curation", {}).get("tags", [])) if isinstance(aliases, dict) else set()
+            if "test" in tags:  # test/staged images are not part of the capture record
+                skipped_test += 1
                 continue
             label = Path(row["label_path"])
             if not label.is_absolute():
@@ -68,7 +74,8 @@ def main() -> int:
             boxes = bombus_boxes(label, width, height)
             if not boxes:
                 continue
-            rows.append({**{key: row[key] for key in FIELDS if key not in {"boxes"}}, "boxes": json.dumps(boxes)})
+            rows.append({**{key: row[key] for key in FIELDS if key not in {"boxes", "aruco"}}, "boxes": json.dumps(boxes),
+                         "aruco": "1" if "aruco" in tags else "0"})
 
     rows.sort(key=lambda row: (row["captured_at"], row["camera"], row["image_id"]))
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
@@ -80,7 +87,9 @@ def main() -> int:
     summary = {
         "source_manifest": str(manifest),
         "source_manifest_sha256": hashlib.sha256(manifest.read_bytes()).hexdigest(),
-        "rule": "year 2026, review_state annotated, split not excluded, at least one class-0 (Bombus) human box",
+        "rule": "year 2026, review_state annotated, split not excluded, at least one class-0 (Bombus) human box, not curated as a test image",
+        "excluded_test_images": skipped_test,
+        "aruco_frames": sum(row["aruco"] == "1" for row in rows),
         "frames": len(rows),
         "boxes": sum(len(json.loads(row["boxes"])) for row in rows),
         "events": len({row["event_id"] for row in rows}),

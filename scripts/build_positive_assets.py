@@ -53,6 +53,7 @@ class Frame:
     crop_width: int
     crop_height: int
     sharpness: float
+    aruco: bool = False
     visit_id: str = ""
     visit_frame_index: int = 0
     visit_frame_count: int = 0
@@ -281,6 +282,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
                 crop_width=crop_width,
                 crop_height=crop_height,
                 sharpness=sharpness_score(target),
+                aruco=row.get("aruco") == "1",
             )
         )
         if index % 50 == 0 or index == len(source_rows):
@@ -298,6 +300,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
             "date": frame.date,
             "captured_at": frame.captured_at,
             "visit_id": frame.visit_id,
+            "aruco_tag": int(frame.aruco),
             "visit_frame_index": frame.visit_frame_index,
             "visit_frame_count": frame.visit_frame_count,
             "crop_filename": frame.crop_filename,
@@ -317,6 +320,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
             "frame_count": len(visit.frames),
             "representative_captured_at": visit.representative.captured_at,
             "crop_filename": visit.representative.crop_filename,
+            "aruco_tag": int(any(frame.aruco for frame in visit.frames)),
         }
         for visit in visits
     ]
@@ -331,6 +335,8 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
             "multiFrameVisits": sum(len(visit.frames) > 1 for visit in visits),
             "dateMin": min(frame.date for frame in frames),
             "dateMax": max(frame.date for frame in frames),
+            "arucoFrames": sum(frame.aruco for frame in frames),
+            "arucoVisits": sum(any(frame.aruco for frame in visit.frames) for visit in visits),
         },
         "frames": [
             {
@@ -345,6 +351,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
                 "cropWidth": frame.crop_width,
                 "cropHeight": frame.crop_height,
                 "isRepresentative": frame.is_representative,
+                "arucoTag": frame.aruco,
             }
             for frame in frames
         ],
@@ -360,6 +367,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
                 "frameCount": len(visit.frames),
                 "representativeCropPath": f"positives/crops/{visit.representative.crop_filename}",
                 "representativeCapturedAt": visit.representative.captured_at,
+                "arucoTag": any(frame.aruco for frame in visit.frames),
             }
             for visit in visits
         ],

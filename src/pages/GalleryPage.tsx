@@ -32,6 +32,7 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
   const [gridCell, setGridCell] = useState(initialCell ?? 'all')
   const [dateFrom, setDateFrom] = useState(positiveSummary.dateMin)
   const [dateTo, setDateTo] = useState(positiveSummary.dateMax)
+  const [tagFilter, setTagFilter] = useState<'all' | 'aruco' | 'untagged'>('all')
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [lightbox, setLightbox] = useState<LightboxState | null>(null)
 
@@ -42,21 +43,23 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
     }
   }, [initialCell, onFilterConsumed])
 
-  useEffect(() => setVisibleCount(PAGE_SIZE), [mode, gridCell, dateFrom, dateTo])
+  useEffect(() => setVisibleCount(PAGE_SIZE), [mode, gridCell, dateFrom, dateTo, tagFilter])
 
   const filteredFrames = useMemo(
     () => positiveFrames.filter((frame) =>
       (gridCell === 'all' || frame.gridCell === gridCell) &&
-      frame.date >= dateFrom && frame.date <= dateTo,
+      frame.date >= dateFrom && frame.date <= dateTo &&
+      (tagFilter === 'all' || (tagFilter === 'aruco') === frame.arucoTag),
     ),
-    [gridCell, dateFrom, dateTo],
+    [gridCell, dateFrom, dateTo, tagFilter],
   )
   const filteredVisits = useMemo(
     () => positiveVisits.filter((visit) =>
       (gridCell === 'all' || visit.gridCell === gridCell) &&
-      visit.date >= dateFrom && visit.date <= dateTo,
+      visit.date >= dateFrom && visit.date <= dateTo &&
+      (tagFilter === 'all' || (tagFilter === 'aruco') === visit.arucoTag),
     ),
-    [gridCell, dateFrom, dateTo],
+    [gridCell, dateFrom, dateTo, tagFilter],
   )
 
   const total = mode === 'frames' ? filteredFrames.length : filteredVisits.length
@@ -64,6 +67,7 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
     setGridCell('all')
     setDateFrom(positiveSummary.dateMin)
     setDateTo(positiveSummary.dateMax)
+    setTagFilter('all')
   }
 
   const openFrame = (frame: PositiveFrame) => {
@@ -113,6 +117,14 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
           To
           <input type="date" min={dateFrom} max={positiveSummary.dateMax} value={dateTo} onChange={(event) => setDateTo(event.target.value)} />
         </label>
+        <label>
+          ArUco tag
+          <select value={tagFilter} onChange={(event) => setTagFilter(event.target.value as 'all' | 'aruco' | 'untagged')}>
+            <option value="all">All bees</option>
+            <option value="aruco">ArUco-tagged bees only ({positiveSummary.arucoVisits} visits)</option>
+            <option value="untagged">Untagged bees only</option>
+          </select>
+        </label>
         <button type="button" className="filter-reset" onClick={resetFilters}>Reset filters</button>
       </section>
 
@@ -134,7 +146,7 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
                 <GalleryCard
                   key={frame.cropPath}
                   frame={frame}
-                  badge={frame.visitFrameCount > 1 ? `${frame.visitFrameIndex}/${frame.visitFrameCount} in visit` : 'Single-frame visit'}
+                  badge={`${frame.visitFrameCount > 1 ? `${frame.visitFrameIndex}/${frame.visitFrameCount} in visit` : 'Single-frame visit'}${frame.arucoTag ? ' · ArUco' : ''}`}
                   onOpen={() => openFrame(frame)}
                 />
               ))
@@ -144,7 +156,7 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
                   <GalleryCard
                     key={visit.visitId}
                     frame={frame}
-                    badge={`${visit.frameCount} ${visit.frameCount === 1 ? 'frame' : 'frames'}`}
+                    badge={`${visit.frameCount} ${visit.frameCount === 1 ? 'frame' : 'frames'}${visit.arucoTag ? ' · ArUco' : ''}`}
                     onOpen={() => openVisit(visit.visitId)}
                   />
                 )
