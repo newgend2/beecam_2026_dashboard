@@ -4,11 +4,13 @@ import {
   assetUrl,
   formatCameraLocation,
   formatCaptureDate,
+  formatTagId,
   framesByVisit,
   locationSummaries,
   positiveFrames,
   positiveSummary,
   positiveVisits,
+  tagIdOptions,
   visitRepresentativeFrame,
 } from '../data/positives'
 import type { PositiveFrame } from '../types'
@@ -32,7 +34,7 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
   const [gridCell, setGridCell] = useState(initialCell ?? 'all')
   const [dateFrom, setDateFrom] = useState(positiveSummary.dateMin)
   const [dateTo, setDateTo] = useState(positiveSummary.dateMax)
-  const [tagFilter, setTagFilter] = useState<'all' | 'aruco' | 'untagged'>('all')
+  const [tagFilter, setTagFilter] = useState<string>('all')
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [lightbox, setLightbox] = useState<LightboxState | null>(null)
 
@@ -49,7 +51,7 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
     () => positiveFrames.filter((frame) =>
       (gridCell === 'all' || frame.gridCell === gridCell) &&
       frame.date >= dateFrom && frame.date <= dateTo &&
-      (tagFilter === 'all' || (tagFilter === 'aruco') === frame.arucoTag),
+      (tagFilter === 'all' || (tagFilter.startsWith('id:') ? frame.tagId === tagFilter.slice(3) : (tagFilter === 'aruco') === frame.arucoTag)),
     ),
     [gridCell, dateFrom, dateTo, tagFilter],
   )
@@ -57,7 +59,7 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
     () => positiveVisits.filter((visit) =>
       (gridCell === 'all' || visit.gridCell === gridCell) &&
       visit.date >= dateFrom && visit.date <= dateTo &&
-      (tagFilter === 'all' || (tagFilter === 'aruco') === visit.arucoTag),
+      (tagFilter === 'all' || (tagFilter.startsWith('id:') ? visit.tagIds.includes(tagFilter.slice(3)) : (tagFilter === 'aruco') === visit.arucoTag)),
     ),
     [gridCell, dateFrom, dateTo, tagFilter],
   )
@@ -119,10 +121,17 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
         </label>
         <label>
           ArUco tag
-          <select value={tagFilter} onChange={(event) => setTagFilter(event.target.value as 'all' | 'aruco' | 'untagged')}>
+          <select value={tagFilter} onChange={(event) => setTagFilter(event.target.value)}>
             <option value="all">All bees</option>
             <option value="aruco">ArUco-tagged bees only ({positiveSummary.arucoVisits} visits)</option>
             <option value="untagged">Untagged bees only</option>
+            {tagIdOptions.length > 0 && (
+              <optgroup label={`Individual bees (${positiveSummary.tagIdentities} tag IDs read)`}>
+                {tagIdOptions.map(({ tag, visits }) => (
+                  <option key={tag} value={`id:${tag}`}>{formatTagId(tag)} ({visits} {visits === 1 ? 'visit' : 'visits'})</option>
+                ))}
+              </optgroup>
+            )}
           </select>
         </label>
         <button type="button" className="filter-reset" onClick={resetFilters}>Reset filters</button>
@@ -146,7 +155,7 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
                 <GalleryCard
                   key={frame.cropPath}
                   frame={frame}
-                  badge={`${frame.visitFrameCount > 1 ? `${frame.visitFrameIndex}/${frame.visitFrameCount} in visit` : 'Single-frame visit'}${frame.arucoTag ? ' · ArUco' : ''}`}
+                  badge={`${frame.visitFrameCount > 1 ? `${frame.visitFrameIndex}/${frame.visitFrameCount} in visit` : 'Single-frame visit'}${frame.tagId ? ` · ${formatTagId(frame.tagId)}` : frame.arucoTag ? ' · ArUco' : ''}`}
                   onOpen={() => openFrame(frame)}
                 />
               ))
@@ -156,7 +165,7 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
                   <GalleryCard
                     key={visit.visitId}
                     frame={frame}
-                    badge={`${visit.frameCount} ${visit.frameCount === 1 ? 'frame' : 'frames'}${visit.arucoTag ? ' · ArUco' : ''}`}
+                    badge={`${visit.frameCount} ${visit.frameCount === 1 ? 'frame' : 'frames'}${visit.tagIds.length ? ` · ${visit.tagIds.map(formatTagId).join(', ')}` : visit.arucoTag ? ' · ArUco' : ''}`}
                     onOpen={() => openVisit(visit.visitId)}
                   />
                 )

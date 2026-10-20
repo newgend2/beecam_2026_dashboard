@@ -54,10 +54,16 @@ class Frame:
     crop_height: int
     sharpness: float
     aruco: bool = False
+    tag_id: str = ""
     visit_id: str = ""
     visit_frame_index: int = 0
     visit_frame_count: int = 0
     is_representative: bool = False
+
+
+def visit_tag_ids(visit) -> list[str]:
+    """Tag IDs read by a person on any frame of the visit (ArUco or n8tag), sorted."""
+    return sorted({frame.tag_id for frame in visit.frames if frame.tag_id})
 
 
 @dataclass
@@ -283,6 +289,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
                 crop_height=crop_height,
                 sharpness=sharpness_score(target),
                 aruco=row.get("aruco") == "1",
+                tag_id=row.get("tag_id", ""),
             )
         )
         if index % 50 == 0 or index == len(source_rows):
@@ -301,6 +308,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
             "captured_at": frame.captured_at,
             "visit_id": frame.visit_id,
             "aruco_tag": int(frame.aruco),
+            "tag_id": frame.tag_id,
             "visit_frame_index": frame.visit_frame_index,
             "visit_frame_count": frame.visit_frame_count,
             "crop_filename": frame.crop_filename,
@@ -321,6 +329,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
             "representative_captured_at": visit.representative.captured_at,
             "crop_filename": visit.representative.crop_filename,
             "aruco_tag": int(any(frame.aruco for frame in visit.frames)),
+            "tag_id": ";".join(visit_tag_ids(visit)),
         }
         for visit in visits
     ]
@@ -337,6 +346,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
             "dateMax": max(frame.date for frame in frames),
             "arucoFrames": sum(frame.aruco for frame in frames),
             "arucoVisits": sum(any(frame.aruco for frame in visit.frames) for visit in visits),
+            "tagIdentities": len({tag for frame in frames for tag in [frame.tag_id] if tag and tag.split(":")[0] in {"aruco", "n8tag"}}),
         },
         "frames": [
             {
@@ -352,6 +362,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
                 "cropHeight": frame.crop_height,
                 "isRepresentative": frame.is_representative,
                 "arucoTag": frame.aruco,
+                "tagId": frame.tag_id or None,
             }
             for frame in frames
         ],
@@ -368,6 +379,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
                 "representativeCropPath": f"positives/crops/{visit.representative.crop_filename}",
                 "representativeCapturedAt": visit.representative.captured_at,
                 "arucoTag": any(frame.aruco for frame in visit.frames),
+                "tagIds": visit_tag_ids(visit),
             }
             for visit in visits
         ],

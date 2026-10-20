@@ -29,6 +29,7 @@ export interface PositiveFrame {
   cropHeight: number
   isRepresentative: boolean
   arucoTag: boolean
+  tagId: string | null
 }
 
 export interface PositiveVisit {
@@ -43,6 +44,7 @@ export interface PositiveVisit {
   representativeCropPath: string
   representativeCapturedAt: string
   arucoTag: boolean
+  tagIds: string[]
 }
 
 export interface PositiveSummary {
@@ -54,6 +56,7 @@ export interface PositiveSummary {
   dateMax: string
   arucoFrames: number
   arucoVisits: number
+  tagIdentities: number
 }
 
 export interface LocationSummary {

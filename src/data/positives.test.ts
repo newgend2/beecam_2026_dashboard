@@ -10,16 +10,16 @@ import {
 
 describe('normalized positive detections', () => {
   it('contains the expected frame and visit totals', () => {
-    expect(positiveFrames).toHaveLength(5527)
-    expect(positiveVisits).toHaveLength(1451)
-    expect(positiveSummary.totalFrames).toBe(5527)
-    expect(positiveSummary.uniqueVisits).toBe(1451)
-    expect(positiveSummary.singleFrameVisits + positiveSummary.multiFrameVisits).toBe(1451)
+    expect(positiveFrames).toHaveLength(5536)
+    expect(positiveVisits).toHaveLength(1453)
+    expect(positiveSummary.totalFrames).toBe(5536)
+    expect(positiveSummary.uniqueVisits).toBe(1453)
+    expect(positiveSummary.singleFrameVisits + positiveSummary.multiFrameVisits).toBe(1453)
   })
 
   it('assigns every frame to one visit with one representative', () => {
     expect(framesByVisit.size).toBe(positiveVisits.length)
-    expect(new Set(positiveFrames.map(({ cropPath }) => cropPath)).size).toBe(5527)
+    expect(new Set(positiveFrames.map(({ cropPath }) => cropPath)).size).toBe(5536)
 
     for (const visit of positiveVisits) {
       const frames = framesByVisit.get(visit.visitId) ?? []
@@ -30,8 +30,8 @@ describe('normalized positive detections', () => {
 
   it('combines Cameras 18 and 19 at their shared F5 location', () => {
     expect(locationSummaries).toHaveLength(26)
-    expect(locationSummaries.reduce((total, location) => total + location.frames, 0)).toBe(5527)
-    expect(locationSummaries.reduce((total, location) => total + location.visits, 0)).toBe(1451)
+    expect(locationSummaries.reduce((total, location) => total + location.frames, 0)).toBe(5536)
+    expect(locationSummaries.reduce((total, location) => total + location.visits, 0)).toBe(1453)
 
     const f5 = locationSummaries.find(({ gridCell }) => gridCell === 'F5')
     expect(f5).toEqual({
