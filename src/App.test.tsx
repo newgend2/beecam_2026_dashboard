@@ -18,8 +18,8 @@ describe('BeeCam dashboard', () => {
       screen.getByRole('heading', { name: 'Bumble bees, frame by frame.' }),
     ).toBeInTheDocument()
     const summary = screen.getByLabelText('Positive detection summary')
-    expect(within(summary).getByText('5,527')).toBeInTheDocument()
-    expect(within(summary).getByText('1,451')).toBeInTheDocument()
+    expect(within(summary).getByText('5,536')).toBeInTheDocument()
+    expect(within(summary).getByText('1,453')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /All positive frames/ })).toHaveAttribute(
       'href',
       expect.stringContaining('all_positive_frames_2026.csv'),
@@ -57,7 +57,7 @@ describe('BeeCam dashboard', () => {
       'true',
     )
     expect(screen.getByRole('combobox', { name: 'Camera location' })).toHaveValue('all')
-    expect(screen.getByText('5,527 positive frames')).toBeInTheDocument()
+    expect(screen.getByText('5,536 positive frames')).toBeInTheDocument()
     expect(screen.getByText('Showing 48')).toBeInTheDocument()
 
     fireEvent.click(screen.getAllByRole('button', { name: /^Open detection from/ })[0])
@@ -91,7 +91,7 @@ describe('BeeCam dashboard', () => {
     expect(screen.getByRole('heading', { name: 'Teaching a model to find Bombus' })).toBeInTheDocument()
     const summary = screen.getByLabelText('Model data summary')
     expect(within(summary).getByText('~5 million')).toBeInTheDocument()
-    expect(within(summary).getByText('5,527')).toBeInTheDocument()
+    expect(within(summary).getByText('5,536')).toBeInTheDocument()
     expect(screen.getByLabelText(/Demonstration of the two-stage model/)).toHaveAttribute(
       'src',
       expect.stringContaining('model/cascade_demo.mp4'),

@@ -106,3 +106,20 @@ export function visitRepresentativeFrame(visit: PositiveVisit): PositiveFrame {
   const frames = framesByVisit.get(visit.visitId) ?? []
   return frames.find((frame) => frame.isRepresentative) ?? frames[0]
 }
+
+/** "aruco:305" -> "ArUco 305", "n8tag:39" -> "n8tag 39"; anything else (e.g. unreadable) is shown as read. */
+export function formatTagId(tagId: string): string {
+  const [kind, value] = tagId.split(':')
+  if (value === undefined) return tagId
+  return `${kind === 'aruco' ? 'ArUco' : kind} ${value}`
+}
+
+/** Tag IDs read on the dashboard's bees, with how many visits carry each. */
+export const tagIdOptions = (() => {
+  const counts = new Map<string, number>()
+  for (const visit of positiveVisits) for (const tag of visit.tagIds) counts.set(tag, (counts.get(tag) ?? 0) + 1)
+  return [...counts.entries()]
+    .filter(([tag]) => tag.includes(':'))
+    .sort(([a], [b]) => a.localeCompare(b, undefined, { numeric: true }))
+    .map(([tag, visits]) => ({ tag, visits }))
+})()

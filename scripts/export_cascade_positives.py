@@ -21,7 +21,7 @@ CASCADE = Path.home() / "Desktop" / "beecam_2026" / "bombus_cascade"
 OUTPUT = ROOT / "positives_manifests" / "bombus_positive_timeline_2026.csv"
 SUMMARY = ROOT / "positives_manifests" / "cascade_export_summary.json"
 BOMBUS_CLASS = "0"
-FIELDS = ["image_id", "site", "camera", "date", "captured_at", "event_id", "camera_period", "source_path", "width", "height", "boxes", "aruco"]
+FIELDS = ["image_id", "site", "camera", "date", "captured_at", "event_id", "camera_period", "source_path", "width", "height", "boxes", "aruco", "tag_id"]
 
 
 def live_manifest(cascade: Path) -> Path:
@@ -74,8 +74,9 @@ def main() -> int:
             boxes = bombus_boxes(label, width, height)
             if not boxes:
                 continue
-            rows.append({**{key: row[key] for key in FIELDS if key not in {"boxes", "aruco"}}, "boxes": json.dumps(boxes),
-                         "aruco": "1" if "aruco" in tags else "0"})
+            rows.append({**{key: row[key] for key in FIELDS if key not in {"boxes", "aruco", "tag_id"}}, "boxes": json.dumps(boxes),
+                         "aruco": "1" if "aruco" in tags else "0",
+                         "tag_id": aliases.get("curation", {}).get("tag_id", "") if isinstance(aliases, dict) else ""})
 
     rows.sort(key=lambda row: (row["captured_at"], row["camera"], row["image_id"]))
     OUTPUT.parent.mkdir(parents=True, exist_ok=True)
@@ -90,6 +91,7 @@ def main() -> int:
         "rule": "year 2026, review_state annotated, split not excluded, at least one class-0 (Bombus) human box, not curated as a test image",
         "excluded_test_images": skipped_test,
         "aruco_frames": sum(row["aruco"] == "1" for row in rows),
+        "tag_id_frames": sum(bool(row["tag_id"]) for row in rows),
         "frames": len(rows),
         "boxes": sum(len(json.loads(row["boxes"])) for row in rows),
         "events": len({row["event_id"] for row in rows}),

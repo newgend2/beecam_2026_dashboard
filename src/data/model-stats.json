@@ -16,9 +16,9 @@
     "source": "bombus_cascade live manifest (canonical_review_20261013T052052_69079a.csv), 2026 rows with review_state annotated or reviewed_negative."
   },
   "confirmedBombus": {
-    "frames": 5527,
-    "boxes": 5533,
-    "events": 2417,
+    "frames": 5536,
+    "boxes": 5542,
+    "events": 2422,
     "source": "bombus_cascade live manifest, 2026 annotated rows outside the excluded split with at least one human Bombus (class 0) box. Exported by scripts/export_cascade_positives.py; excludes frames curated as test images."
   },
   "results": [
