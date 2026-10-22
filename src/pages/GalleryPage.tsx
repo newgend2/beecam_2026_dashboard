@@ -194,7 +194,7 @@ interface GalleryCardProps {
   onOpen: () => void
 }
 
-function GalleryCard({ frame, badge, onOpen }: GalleryCardProps) {
+export function GalleryCard({ frame, badge, onOpen }: GalleryCardProps) {
   return (
     <article className="gallery-card">
       <button type="button" className="gallery-image-button" onClick={onOpen} aria-label={`Open detection from ${frame.gridCell}, Camera ${frame.cameraId}, ${formatCaptureDate(frame.capturedAt)}`}>

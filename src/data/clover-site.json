@@ -1,0 +1,16 @@
+{
+  "name": "Clover field near Philomath, Oregon",
+  "coordinates": "44°31'38.3\"N 123°18'20.2\"W",
+  "latitude": 44.52731,
+  "longitude": -123.30561,
+  "layout": "Four cameras about 5 m apart in the clover field",
+  "captureMode": "Timelapse, one full-resolution frame per second (no on-camera detection)",
+  "recording": [
+    { "cameraId": 1, "first": "2026-08-21 16:19", "last": "2026-08-28 09:31", "frames": 212519, "note": "" },
+    { "cameraId": 4, "first": "2026-08-23 15:31", "last": "2026-08-26 16:48", "frames": 43171, "note": "no frames on 2026-08-24" },
+    { "cameraId": 11, "first": "2026-08-23 17:04", "last": "2026-08-24 18:39", "frames": 41103, "note": "" },
+    { "cameraId": 23, "first": "2026-08-23 17:21", "last": "2026-08-24 17:54", "frames": 38442, "note": "" },
+    { "cameraId": 24, "first": null, "last": null, "frames": 0, "note": "deployed, recorded nothing" }
+  ],
+  "reviewNote": "Bombus frames are human-confirmed frames from a stratified review of the timelapse. The long Camera 1 visit on 2026-08-27 (14:39–14:48, a bee half outside the frame) was reviewed at every tenth frame, so it appears as many short visits here."
+}

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { AnalyticsPage } from './pages/AnalyticsPage'
+import { CloverPage } from './pages/CloverPage'
 import { CameraStatusPage } from './pages/CameraStatusPage'
 import { GalleryPage } from './pages/GalleryPage'
 import { HomePage } from './pages/HomePage'
@@ -14,6 +15,7 @@ const tabs: Array<{ id: DashboardTab; label: string }> = [
   { id: 'analytics', label: 'Analytics' },
   { id: 'model', label: 'Model training' },
   { id: 'status', label: 'Camera status' },
+  { id: 'clover', label: 'Clover cams (Oregon)' },
 ]
 
 function tabFromHash(): DashboardTab {
@@ -51,7 +53,7 @@ function App() {
         <div className="header-inner">
           <button className="brand" type="button" onClick={() => navigate('home')} aria-label="BeeCam 2026 dashboard home">
             <span className="brand-mark" aria-hidden="true">B</span>
-            <span><strong>BeeCam 2026</strong><small>Emerald Queen research network</small></span>
+            <span><strong>BeeCam 2026</strong><small>{activeTab === 'clover' ? 'Clover cams · Philomath, Oregon' : 'Emerald Queen research network'}</small></span>
           </button>
           <div className="season-badge"><span className="season-dot" aria-hidden="true" />Field season complete</div>
         </div>
@@ -84,10 +86,11 @@ function App() {
       {activeTab === 'analytics' && <AnalyticsPage />}
       {activeTab === 'model' && <ModelPage />}
       {activeTab === 'status' && <CameraStatusPage />}
+      {activeTab === 'clover' && <CloverPage />}
 
       <footer>
         <p>BeeCam 2026 · Bumble bee monitoring research</p>
-        <span>Emerald Queen · Willow Creek, California</span>
+        <span>{activeTab === 'clover' ? 'Clover field · near Philomath, Oregon' : 'Emerald Queen · Willow Creek, California'}</span>
       </footer>
     </>
   )
