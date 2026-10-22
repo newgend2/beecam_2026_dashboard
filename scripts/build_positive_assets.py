@@ -3,7 +3,9 @@
 
 The input manifest stays local because it contains absolute filesystem paths.
 This script emits native-resolution padded detection crops, dashboard JSON,
-two curated CSV manifests, and a deterministic ZIP containing every crop.
+two curated CSV manifests, and a deterministic ZIP containing every crop. Each
+crop is scored for sharpness (sharpness.py) and its Bombus boxes are recorded in
+scripts/crop_boxes.json so the scores can be redone without the manifest.
 """
 
 from __future__ import annotations
@@ -21,6 +23,8 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+
+from sharpness import bee_sharpness, boxes_in_crop, representative_index, update_crop_boxes
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -59,6 +63,7 @@ class Frame:
     visit_frame_index: int = 0
     visit_frame_count: int = 0
     is_representative: bool = False
+    bee_boxes: list[tuple[int, int, int, int]] = field(default_factory=list)
 
 
 def visit_tag_ids(visit) -> list[str]:
@@ -158,29 +163,6 @@ def create_crop(source: Path, target: Path, bounds: tuple[int, int, int, int]) -
     return width, height
 
 
-def sharpness_score(path: Path) -> float:
-    result = subprocess.run(
-        [
-            "convert",
-            str(path),
-            "-colorspace",
-            "Gray",
-            "-resize",
-            "256x256>",
-            "-morphology",
-            "Convolve",
-            "Laplacian:0",
-            "-format",
-            "%[fx:standard_deviation]",
-            "info:",
-        ],
-        check=True,
-        capture_output=True,
-        text=True,
-    )
-    return float(result.stdout.strip())
-
-
 def assign_visits(frames: list[Frame]) -> list[Visit]:
     grouped: dict[tuple[int, str], list[Frame]] = defaultdict(list)
     for frame in frames:
@@ -205,16 +187,12 @@ def assign_visits(frames: list[Frame]) -> list[Visit]:
 
     for visit in visits:
         count = len(visit.frames)
-        midpoint = (count - 1) / 2
-        representative_index = max(
-            range(count),
-            key=lambda index: (visit.frames[index].sharpness, -abs(index - midpoint)),
-        )
+        best = representative_index([frame.sharpness for frame in visit.frames])
         for index, frame in enumerate(visit.frames):
             frame.visit_id = visit.visit_id
             frame.visit_frame_index = index + 1
             frame.visit_frame_count = count
-            frame.is_representative = index == representative_index
+            frame.is_representative = index == best
     return visits
 
 
@@ -276,6 +254,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
         filenames.add(filename)
         target = temporary_crop_dir / filename
         crop_width, crop_height = create_crop(source, target, bounds)
+        bee_boxes = boxes_in_crop(boxes, bounds)
         frames.append(
             Frame(
                 site=row["site"],
@@ -287,9 +266,10 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
                 crop_filename=filename,
                 crop_width=crop_width,
                 crop_height=crop_height,
-                sharpness=sharpness_score(target),
+                sharpness=bee_sharpness(target, bee_boxes),
                 aruco=row.get("aruco") == "1",
                 tag_id=row.get("tag_id", ""),
+                bee_boxes=bee_boxes,
             )
         )
         if index % 50 == 0 or index == len(source_rows):
@@ -312,6 +292,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
             "visit_frame_index": frame.visit_frame_index,
             "visit_frame_count": frame.visit_frame_count,
             "crop_filename": frame.crop_filename,
+            "sharpness": frame.sharpness,
         }
         for frame in frames
     ]
@@ -330,6 +311,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
             "crop_filename": visit.representative.crop_filename,
             "aruco_tag": int(any(frame.aruco for frame in visit.frames)),
             "tag_id": ";".join(visit_tag_ids(visit)),
+            "sharpness": visit.representative.sharpness,
         }
         for visit in visits
     ]
@@ -363,6 +345,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
                 "isRepresentative": frame.is_representative,
                 "arucoTag": frame.aruco,
                 "tagId": frame.tag_id or None,
+                "sharpness": frame.sharpness,
             }
             for frame in frames
         ],
@@ -380,11 +363,16 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
                 "representativeCapturedAt": visit.representative.captured_at,
                 "arucoTag": any(frame.aruco for frame in visit.frames),
                 "tagIds": visit_tag_ids(visit),
+                "sharpness": visit.representative.sharpness,
             }
             for visit in visits
         ],
     }
     DATA_OUTPUT.write_text(json.dumps(public_data, separators=(",", ":")) + "\n", encoding="utf-8")
+    update_crop_boxes("positives/crops/", {
+        f"positives/crops/{frame.crop_filename}": [frame.crop_width, frame.crop_height, [list(box) for box in frame.bee_boxes]]
+        for frame in frames
+    })
 
     if CROP_DIR.exists():
         shutil.rmtree(CROP_DIR)

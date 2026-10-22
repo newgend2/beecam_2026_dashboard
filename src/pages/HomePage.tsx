@@ -4,7 +4,7 @@ import {
   assetUrl,
   formatCaptureDate,
   positiveSummary,
-  positiveVisits,
+  sharpestVisits,
   visitRepresentativeFrame,
 } from '../data/positives'
 import modelStats from '../data/model-stats.json'
@@ -14,8 +14,9 @@ interface HomePageProps {
   onNavigate: (tab: DashboardTab) => void
 }
 
+/** The slideshow shows only the sharpest visits, in random order. */
 function shuffledVisits(): PositiveVisit[] {
-  const values = [...positiveVisits]
+  const values = [...sharpestVisits]
   for (let index = values.length - 1; index > 0; index -= 1) {
     const swap = Math.floor(Math.random() * (index + 1))
     ;[values[index], values[swap]] = [values[swap], values[index]]

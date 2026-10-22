@@ -18,6 +18,19 @@ for (const frame of data.frames) {
 }
 const representatives = data.frames.filter((frame) => frame.isRepresentative).length
 if (representatives !== data.visits.length) errors.push(`Expected ${data.visits.length} representatives; found ${representatives}`)
+const cropBoxes = JSON.parse(await readFile(new URL('scripts/crop_boxes.json', root), 'utf8')).crops
+const sharpestByVisit = new Map()
+for (const frame of data.frames) {
+  if (!Number.isFinite(frame.sharpness) || frame.sharpness < 0) errors.push(`Missing sharpness for ${frame.cropPath}`)
+  if (!cropBoxes[frame.cropPath]) errors.push(`No crop boxes for ${frame.cropPath}; score_sharpness.py could not rescore it`)
+  sharpestByVisit.set(frame.visitId, Math.max(sharpestByVisit.get(frame.visitId) ?? -1, frame.sharpness))
+}
+for (const frame of data.frames.filter((item) => item.isRepresentative)) {
+  if (frame.sharpness !== sharpestByVisit.get(frame.visitId)) errors.push(`Representative ${frame.cropPath} is not the sharpest frame of its visit`)
+}
+for (const visit of data.visits) {
+  if (visit.sharpness !== sharpestByVisit.get(visit.visitId)) errors.push(`Visit ${visit.visitId} sharpness does not match its sharpest frame`)
+}
 if (!recall.settings?.length || !recall.perCamera?.length) errors.push('Clover recall summary is empty')
 
 const privateFields = ['source_path', 'image_id', 'event_id', 'camera_period']

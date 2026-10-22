@@ -29,6 +29,20 @@ for (const frame of data.frames) {
 const representatives = data.frames.filter((frame) => frame.isRepresentative)
 if (representatives.length !== 1453) errors.push(`Expected 1453 representative frames; found ${representatives.length}`)
 
+const cropBoxes = JSON.parse(await readFile(new URL('scripts/crop_boxes.json', root), 'utf8')).crops
+const sharpestByVisit = new Map()
+for (const frame of data.frames) {
+  if (!Number.isFinite(frame.sharpness) || frame.sharpness < 0) errors.push(`Missing sharpness for ${frame.cropPath}`)
+  if (!cropBoxes[frame.cropPath]) errors.push(`No crop boxes for ${frame.cropPath}; score_sharpness.py could not rescore it`)
+  sharpestByVisit.set(frame.visitId, Math.max(sharpestByVisit.get(frame.visitId) ?? -1, frame.sharpness))
+}
+for (const frame of representatives) {
+  if (frame.sharpness !== sharpestByVisit.get(frame.visitId)) errors.push(`Representative ${frame.cropPath} is not the sharpest frame of its visit`)
+}
+for (const visit of data.visits) {
+  if (visit.sharpness !== sharpestByVisit.get(visit.visitId)) errors.push(`Visit ${visit.visitId} sharpness does not match its sharpest frame`)
+}
+
 const privateFields = ['source_path', 'image_id', 'event_id', 'camera_period']
 for (const filename of ['all_positive_frames_2026.csv', 'unique_visits_2026.csv']) {
   const csv = await readFile(new URL(`public/downloads/${filename}`, root), 'utf8')

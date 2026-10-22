@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
+import { positiveFrames, sharpestVisits } from './data/positives'
 
 describe('BeeCam dashboard', () => {
   beforeEach(() => {
@@ -26,6 +27,13 @@ describe('BeeCam dashboard', () => {
     )
     expect(screen.getByRole('link', { name: /Unique visits/ })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Detection crops, May/ })).toBeInTheDocument()
+  })
+
+  it('shows only the sharpest visits in the landing slideshow', () => {
+    render(<App />)
+    const slide = screen.getByAltText(/^Bumble bee detection from Camera/)
+    const sharpestCrops = sharpestVisits.map(({ representativeCropPath }) => representativeCropPath)
+    expect(sharpestCrops.some((cropPath) => slide.getAttribute('src')?.endsWith(cropPath))).toBe(true)
   })
 
   it('navigates to the camera-status view and supports keyboard selection', () => {
@@ -68,6 +76,23 @@ describe('BeeCam dashboard', () => {
     )
     fireEvent.click(screen.getByRole('button', { name: 'Close image viewer' }))
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+  })
+
+  it('sorts the gallery sharpest first on request', () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('link', { name: 'Gallery' }))
+
+    const sort = screen.getByRole('combobox', { name: 'Sort by' })
+    expect(sort).toHaveValue('time')
+    fireEvent.change(sort, { target: { value: 'sharpness' } })
+    expect(screen.getByText(/variance of the Laplacian/)).toBeInTheDocument()
+
+    const sharpest = [...positiveFrames].sort((a, b) => b.sharpness - a.sharpness)[0]
+    fireEvent.click(screen.getAllByRole('button', { name: /^Open detection from/ })[0])
+    expect(screen.getByRole('link', { name: 'Download crop' })).toHaveAttribute(
+      'href',
+      expect.stringContaining(sharpest.cropPath),
+    )
   })
 
   it('supports keyboard map selection and transfers the location to the gallery', () => {

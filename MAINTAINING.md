@@ -73,6 +73,28 @@ Git because they contain absolute paths or free-form notes. The public
 manifests exclude `source_path`, `image_id`, `event_id`, and `camera_period`,
 and add normalized camera IDs, grid cells, and visit fields instead.
 
+## Sharpness
+
+Every crop carries a sharpness score (`scripts/sharpness.py`): the variance of the
+Laplacian inside each Bombus box of the crop, after the box is converted to grayscale
+and shrunk so its long side is at most 64 pixels; the crop takes its sharpest box.
+Scoring only the bee, at one scale, keeps the score about the bee. Over a whole crop the
+variance mostly rewards sensor grain and the speckled targets, which put blurred
+fly-throughs near the top.
+
+The score picks each visit's representative frame, orders the gallery's "Sharpest first"
+sort, and limits the Overview slideshow to the sharpest tenth of visits
+(`LANDING_SHARPEST_SHARE` in `src/data/positives.ts`). Both refresh scripts score crops as
+they make them and record each crop's boxes, in crop coordinates, in
+`scripts/crop_boxes.json`. After a change to the scoring, rescore the published crops
+without the private manifests:
+
+```bash
+npm run score:sharpness
+npm test
+npm run build
+```
+
 ## Clover cams tab
 
 The Clover cams (Oregon) tab is built by `scripts/build_clover_assets.py`
