@@ -58,7 +58,8 @@ def main() -> int:
     skipped_test = 0
     with manifest.open(newline="", encoding="utf-8") as handle:
         for row in csv.DictReader(handle):
-            if row["year"] != "2026" or row["review_state"] != "annotated" or row["split"] == "excluded":
+            if row["year"] != "2026" or row["site"] != "emerald_queen" or row["review_state"] != "annotated" or row["split"] == "excluded":
+                # other sites (e.g. the Philomath clover cams) are built separately: build_clover_assets.py
                 continue
             if not row["label_path"]:
                 continue
@@ -88,7 +89,7 @@ def main() -> int:
     summary = {
         "source_manifest": str(manifest),
         "source_manifest_sha256": hashlib.sha256(manifest.read_bytes()).hexdigest(),
-        "rule": "year 2026, review_state annotated, split not excluded, at least one class-0 (Bombus) human box, not curated as a test image",
+        "rule": "site emerald_queen, year 2026, review_state annotated, split not excluded, at least one class-0 (Bombus) human box, not curated as a test image",
         "excluded_test_images": skipped_test,
         "aruco_frames": sum(row["aruco"] == "1" for row in rows),
         "tag_id_frames": sum(bool(row["tag_id"]) for row in rows),
