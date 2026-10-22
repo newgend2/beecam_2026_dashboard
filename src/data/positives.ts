@@ -1,6 +1,7 @@
 import positiveDataJson from './positive-data.json'
 import { cameras } from './cameras'
 import type {
+  GallerySort,
   LocationSummary,
   PositiveFrame,
   PositiveSummary,
@@ -106,6 +107,19 @@ export function visitRepresentativeFrame(visit: PositiveVisit): PositiveFrame {
   const frames = framesByVisit.get(visit.visitId) ?? []
   return frames.find((frame) => frame.isRepresentative) ?? frames[0]
 }
+
+/** Gallery order: capture time as published, or sharpest first. */
+export function sortForGallery<T extends { sharpness: number }>(items: T[], sort: GallerySort): T[] {
+  return sort === 'sharpness' ? [...items].sort((a, b) => b.sharpness - a.sharpness) : items
+}
+
+/** Share of visits, sharpest first, that the landing-page slideshow draws from. */
+export const LANDING_SHARPEST_SHARE = 0.1
+
+export const sharpestVisits = sortForGallery(positiveVisits, 'sharpness').slice(
+  0,
+  Math.round(positiveVisits.length * LANDING_SHARPEST_SHARE),
+)
 
 /** "aruco:305" -> "ArUco 305", "n8tag:39" -> "n8tag 39"; anything else (e.g. unreadable) is shown as read. */
 export function formatTagId(tagId: string): string {

@@ -30,6 +30,8 @@ export interface PositiveFrame {
   isRepresentative: boolean
   arucoTag: boolean
   tagId: string | null
+  /** Variance of the Laplacian inside the bee's box (scripts/sharpness.py); higher is sharper. */
+  sharpness: number
 }
 
 export interface PositiveVisit {
@@ -45,6 +47,8 @@ export interface PositiveVisit {
   representativeCapturedAt: string
   arucoTag: boolean
   tagIds: string[]
+  /** Sharpness of the representative frame, the visit's sharpest. */
+  sharpness: number
 }
 
 export interface PositiveSummary {
@@ -68,3 +72,4 @@ export interface LocationSummary {
 
 export type DashboardTab = 'home' | 'map' | 'gallery' | 'analytics' | 'model' | 'status' | 'clover'
 export type PositiveMetric = 'frames' | 'visits'
+export type GallerySort = 'time' | 'sharpness'

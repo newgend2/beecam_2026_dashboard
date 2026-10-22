@@ -1174,7 +1174,7 @@ footer p {
 
 .gallery-filters {
   display: grid;
-  grid-template-columns: minmax(260px, 1fr) 170px 170px auto;
+  grid-template-columns: minmax(200px, 1.5fr) minmax(130px, 1fr) minmax(130px, 1fr) minmax(150px, 1.2fr) minmax(140px, 1fr) auto;
   align-items: end;
   gap: 12px;
   padding: 16px;
@@ -1205,6 +1205,16 @@ footer p {
   font: inherit;
   font-size: 12px;
   font-weight: 600;
+}
+
+.gallery-filters--clover {
+  grid-template-columns: minmax(220px, 1fr) 190px auto;
+}
+
+.gallery-sort-note {
+  margin: -14px 0 0;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .gallery-result-line {

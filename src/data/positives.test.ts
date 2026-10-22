@@ -6,6 +6,7 @@ import {
   positiveFrames,
   positiveSummary,
   positiveVisits,
+  sharpestVisits,
 } from './positives'
 
 describe('normalized positive detections', () => {
@@ -40,6 +41,26 @@ describe('normalized positive detections', () => {
       frames: 234,
       visits: 75,
     })
+  })
+
+  it("makes each visit's representative its sharpest frame", () => {
+    for (const visit of positiveVisits) {
+      const frames = framesByVisit.get(visit.visitId) ?? []
+      const sharpest = Math.max(...frames.map(({ sharpness }) => sharpness))
+      const representative = frames.find(({ isRepresentative }) => isRepresentative)
+      expect(representative?.sharpness).toBe(sharpest)
+      expect(visit.sharpness).toBe(sharpest)
+      expect(visit.representativeCropPath).toBe(representative?.cropPath)
+    }
+  })
+
+  it('feeds the landing slideshow only the sharpest tenth of visits', () => {
+    expect(sharpestVisits).toHaveLength(Math.round(positiveVisits.length / 10))
+    const cutoff = Math.min(...sharpestVisits.map(({ sharpness }) => sharpness))
+    const chosen = new Set(sharpestVisits.map(({ visitId }) => visitId))
+    for (const visit of positiveVisits) {
+      if (!chosen.has(visit.visitId)) expect(visit.sharpness).toBeLessThanOrEqual(cutoff)
+    }
   })
 
   it('builds cumulative series ending at the published totals', () => {

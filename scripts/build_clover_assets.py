@@ -2,7 +2,7 @@
 """Build the clover-cams tab assets (farm near Philomath, Oregon) from the bombus_cascade manifest.
 
 Reads the live bombus_cascade manifest (read-only) and keeps human-confirmed Bombus frames of site
-`clover`: review_state annotated with at least one class-0 box. Crops, sharpness, visit grouping
+`clover`: review_state annotated with at least one class-0 box. Crops, sharpness, crop boxes, visit grouping
 (gap >= 2 s per camera and day) and CSV columns follow build_positive_assets.py; visit IDs use a
 `clover-` prefix. Also writes the recall-analysis summary from the timelapse evaluation.
 
@@ -24,8 +24,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_positive_assets import (  # noqa: E402
-    VISIT_GAP_SECONDS, Frame, Visit, create_crop, crop_bounds, crop_filename, parse_camera_id, sharpness_score, write_csv,
+    VISIT_GAP_SECONDS, Frame, Visit, create_crop, crop_bounds, crop_filename, parse_camera_id, write_csv,
 )
+from sharpness import bee_sharpness, boxes_in_crop, representative_index, update_crop_boxes  # noqa: E402
 from export_cascade_positives import CASCADE, bombus_boxes, live_manifest  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -58,8 +59,7 @@ def assign_visits(frames: list[Frame]) -> list[Visit]:
             previous = frame
     for visit in visits:
         count = len(visit.frames)
-        midpoint = (count - 1) / 2
-        best = max(range(count), key=lambda i: (visit.frames[i].sharpness, -abs(i - midpoint)))
+        best = representative_index([frame.sharpness for frame in visit.frames])
         for index, frame in enumerate(visit.frames):
             frame.visit_id, frame.visit_frame_index, frame.visit_frame_count = visit.visit_id, index + 1, count
             frame.is_representative = index == best
@@ -116,25 +116,30 @@ def build(cascade: Path) -> dict:
             name = crop_filename(camera_id, row["captured_at"]).replace(".webp", f"_{suffix}.webp")
         names.add(name)
         target = building / name
-        crop_width, crop_height = create_crop(Path(row["source_path"]), target, crop_bounds(row["boxes"], width, height))
+        bounds = crop_bounds(row["boxes"], width, height)
+        crop_width, crop_height = create_crop(Path(row["source_path"]), target, bounds)
+        bee_boxes = boxes_in_crop(row["boxes"], bounds)
         frames.append(Frame(site=SITE, camera_id=camera_id, grid_cell=LOCATION, date=row["date"], captured_at=row["captured_at"],
                             timestamp=datetime.fromisoformat(row["captured_at"]), crop_filename=name,
-                            crop_width=crop_width, crop_height=crop_height, sharpness=sharpness_score(target)))
+                            crop_width=crop_width, crop_height=crop_height, sharpness=bee_sharpness(target, bee_boxes),
+                            bee_boxes=bee_boxes))
         if index % 50 == 0 or index == len(rows):
             print(f"processed {index}/{len(rows)} crops", file=sys.stderr)
     visits = assign_visits(frames)
     frames.sort(key=lambda f: (f.timestamp, f.camera_id))
     visits.sort(key=lambda v: (v.frames[0].timestamp, v.camera_id))
 
-    write_csv(ALL_FRAMES_OUTPUT, ["site", "camera_id", "date", "captured_at", "visit_id", "visit_frame_index", "visit_frame_count", "crop_filename"],
+    write_csv(ALL_FRAMES_OUTPUT, ["site", "camera_id", "date", "captured_at", "visit_id", "visit_frame_index", "visit_frame_count", "crop_filename",
+                                  "sharpness"],
               [{"site": SITE, "camera_id": f.camera_id, "date": f.date, "captured_at": f.captured_at, "visit_id": f.visit_id,
-                "visit_frame_index": f.visit_frame_index, "visit_frame_count": f.visit_frame_count, "crop_filename": f.crop_filename} for f in frames])
+                "visit_frame_index": f.visit_frame_index, "visit_frame_count": f.visit_frame_count, "crop_filename": f.crop_filename,
+                "sharpness": f.sharpness} for f in frames])
     write_csv(UNIQUE_VISITS_OUTPUT, ["site", "camera_id", "date", "visit_id", "visit_started_at", "visit_ended_at", "duration_seconds",
-                                     "frame_count", "representative_captured_at", "crop_filename"],
+                                     "frame_count", "representative_captured_at", "crop_filename", "sharpness"],
               [{"site": SITE, "camera_id": v.camera_id, "date": v.date, "visit_id": v.visit_id, "visit_started_at": v.started_at,
                 "visit_ended_at": v.ended_at, "duration_seconds": f"{v.duration_seconds:.6f}".rstrip("0").rstrip("."),
                 "frame_count": len(v.frames), "representative_captured_at": v.representative.captured_at,
-                "crop_filename": v.representative.crop_filename} for v in visits])
+                "crop_filename": v.representative.crop_filename, "sharpness": v.representative.sharpness} for v in visits])
     cameras = sorted({f.camera_id for f in frames})
     data = {
         "summary": {"totalFrames": len(frames), "uniqueVisits": len(visits),
@@ -147,13 +152,17 @@ def build(cascade: Path) -> dict:
         "frames": [{"cameraId": f.camera_id, "gridCell": f.grid_cell, "date": f.date, "capturedAt": f.captured_at, "visitId": f.visit_id,
                     "visitFrameIndex": f.visit_frame_index, "visitFrameCount": f.visit_frame_count, "cropPath": f"clover/crops/{f.crop_filename}",
                     "cropWidth": f.crop_width, "cropHeight": f.crop_height, "isRepresentative": f.is_representative,
-                    "arucoTag": False, "tagId": None} for f in frames],
+                    "arucoTag": False, "tagId": None, "sharpness": f.sharpness} for f in frames],
         "visits": [{"visitId": v.visit_id, "cameraId": v.camera_id, "gridCell": v.grid_cell, "date": v.date, "startedAt": v.started_at,
                     "endedAt": v.ended_at, "durationSeconds": v.duration_seconds, "frameCount": len(v.frames),
                     "representativeCropPath": f"clover/crops/{v.representative.crop_filename}",
-                    "representativeCapturedAt": v.representative.captured_at, "arucoTag": False, "tagIds": []} for v in visits],
+                    "representativeCapturedAt": v.representative.captured_at, "arucoTag": False, "tagIds": [],
+                    "sharpness": v.representative.sharpness} for v in visits],
     }
     DATA_OUTPUT.write_text(json.dumps(data, separators=(",", ":")) + "\n", encoding="utf-8")
+    update_crop_boxes("clover/crops/", {
+        f"clover/crops/{f.crop_filename}": [f.crop_width, f.crop_height, [list(box) for box in f.bee_boxes]] for f in frames
+    })
     RECALL_OUTPUT.write_text(json.dumps(recall_summary(cascade), indent=1) + "\n", encoding="utf-8")
     if CROP_DIR.exists():
         shutil.rmtree(CROP_DIR)

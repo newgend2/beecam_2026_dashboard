@@ -41,4 +41,17 @@ describe('Clover cams tab', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Unique visits' }))
     expect(screen.getByText(`${cloverSummary.uniqueVisits} unique visits`)).toBeInTheDocument()
   })
+
+  it('sorts the clover gallery sharpest first on request', () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('link', { name: 'Clover cams (Oregon)' }))
+    fireEvent.change(screen.getByRole('combobox', { name: 'Sort by' }), { target: { value: 'sharpness' } })
+
+    const sharpest = [...cloverFrames].sort((a, b) => b.sharpness - a.sharpness)[0]
+    fireEvent.click(screen.getAllByRole('button', { name: /^Open detection from/ })[0])
+    expect(screen.getByRole('link', { name: 'Download crop' })).toHaveAttribute(
+      'href',
+      expect.stringContaining(sharpest.cropPath),
+    )
+  })
 })

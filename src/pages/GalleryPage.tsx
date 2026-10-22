@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Lightbox } from '../components/Lightbox'
+import { SharpnessNote, SortSelect } from '../components/SortSelect'
 import {
   assetUrl,
   formatCameraLocation,
@@ -10,10 +11,11 @@ import {
   positiveFrames,
   positiveSummary,
   positiveVisits,
+  sortForGallery,
   tagIdOptions,
   visitRepresentativeFrame,
 } from '../data/positives'
-import type { PositiveFrame } from '../types'
+import type { GallerySort, PositiveFrame } from '../types'
 
 type GalleryMode = 'frames' | 'visits'
 
@@ -35,6 +37,7 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
   const [dateFrom, setDateFrom] = useState(positiveSummary.dateMin)
   const [dateTo, setDateTo] = useState(positiveSummary.dateMax)
   const [tagFilter, setTagFilter] = useState<string>('all')
+  const [sort, setSort] = useState<GallerySort>('time')
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [lightbox, setLightbox] = useState<LightboxState | null>(null)
 
@@ -45,23 +48,23 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
     }
   }, [initialCell, onFilterConsumed])
 
-  useEffect(() => setVisibleCount(PAGE_SIZE), [mode, gridCell, dateFrom, dateTo, tagFilter])
+  useEffect(() => setVisibleCount(PAGE_SIZE), [mode, gridCell, dateFrom, dateTo, tagFilter, sort])
 
   const filteredFrames = useMemo(
-    () => positiveFrames.filter((frame) =>
+    () => sortForGallery(positiveFrames.filter((frame) =>
       (gridCell === 'all' || frame.gridCell === gridCell) &&
       frame.date >= dateFrom && frame.date <= dateTo &&
       (tagFilter === 'all' || (tagFilter.startsWith('id:') ? frame.tagId === tagFilter.slice(3) : (tagFilter === 'aruco') === frame.arucoTag)),
-    ),
-    [gridCell, dateFrom, dateTo, tagFilter],
+    ), sort),
+    [gridCell, dateFrom, dateTo, tagFilter, sort],
   )
   const filteredVisits = useMemo(
-    () => positiveVisits.filter((visit) =>
+    () => sortForGallery(positiveVisits.filter((visit) =>
       (gridCell === 'all' || visit.gridCell === gridCell) &&
       visit.date >= dateFrom && visit.date <= dateTo &&
       (tagFilter === 'all' || (tagFilter.startsWith('id:') ? visit.tagIds.includes(tagFilter.slice(3)) : (tagFilter === 'aruco') === visit.arucoTag)),
-    ),
-    [gridCell, dateFrom, dateTo, tagFilter],
+    ), sort),
+    [gridCell, dateFrom, dateTo, tagFilter, sort],
   )
 
   const total = mode === 'frames' ? filteredFrames.length : filteredVisits.length
@@ -134,6 +137,7 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
             )}
           </select>
         </label>
+        <SortSelect value={sort} onChange={setSort} />
         <button type="button" className="filter-reset" onClick={resetFilters}>Reset filters</button>
       </section>
 
@@ -141,6 +145,7 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
         <strong>{total.toLocaleString()} {mode === 'frames' ? 'positive frames' : 'unique visits'}</strong>
         <span>Showing {Math.min(visibleCount, total).toLocaleString()}</span>
       </div>
+      {sort === 'sharpness' && <SharpnessNote />}
 
       {total === 0 ? (
         <section className="empty-state">

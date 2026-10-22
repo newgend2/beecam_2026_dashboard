@@ -7,11 +7,11 @@ confirmed by a person.
 
 The [website](https://newgend2.github.io/beecam_2026_dashboard/) (GitHub Pages) presents the 2026 field season:
 
-- **Overview**: season totals and a slideshow of bumble bee visits.
+- **Overview**: season totals and a slideshow of the sharpest bumble bee visits.
 - **Camera map**: activity across the camera grid at the Emerald Queen site
   (Willow Creek, California).
 - **Gallery**: every confirmed bumble bee frame, or one image per visit, with camera
-  and date filters.
+  and date filters, sorted by time or with the sharpest images first.
 - **Analytics**: activity by camera location and over the season.
 - **Model training**: how the two-stage detector and classifier finds bumble bees, with a
   demo video and its results.

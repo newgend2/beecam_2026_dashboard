@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Lightbox } from '../components/Lightbox'
+import { SharpnessNote, SortSelect } from '../components/SortSelect'
 import {
   cloverCameras,
   cloverFrames,
@@ -11,8 +12,8 @@ import {
   cloverVisits,
 } from '../data/clover'
 import { GalleryCard } from './GalleryPage'
-import { assetUrl } from '../data/positives'
-import type { PositiveFrame } from '../types'
+import { assetUrl, sortForGallery } from '../data/positives'
+import type { GallerySort, PositiveFrame } from '../types'
 
 type GalleryMode = 'frames' | 'visits'
 
@@ -30,18 +31,19 @@ function percent(value: number, digits = 0): string {
 export function CloverPage() {
   const [mode, setMode] = useState<GalleryMode>('frames')
   const [cameraId, setCameraId] = useState<string>('all')
+  const [sort, setSort] = useState<GallerySort>('time')
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [lightbox, setLightbox] = useState<LightboxState | null>(null)
 
-  useEffect(() => setVisibleCount(PAGE_SIZE), [mode, cameraId])
+  useEffect(() => setVisibleCount(PAGE_SIZE), [mode, cameraId, sort])
 
   const filteredFrames = useMemo(
-    () => cloverFrames.filter((frame) => cameraId === 'all' || frame.cameraId === Number(cameraId)),
-    [cameraId],
+    () => sortForGallery(cloverFrames.filter((frame) => cameraId === 'all' || frame.cameraId === Number(cameraId)), sort),
+    [cameraId, sort],
   )
   const filteredVisits = useMemo(
-    () => cloverVisits.filter((visit) => cameraId === 'all' || visit.cameraId === Number(cameraId)),
-    [cameraId],
+    () => sortForGallery(cloverVisits.filter((visit) => cameraId === 'all' || visit.cameraId === Number(cameraId)), sort),
+    [cameraId, sort],
   )
   const total = mode === 'frames' ? filteredFrames.length : filteredVisits.length
   const camera = cloverRecall.settings[0]
@@ -190,7 +192,7 @@ export function CloverPage() {
         </ul>
       </section>
 
-      <section className="gallery-filters" aria-label="Clover gallery filters">
+      <section className="gallery-filters gallery-filters--clover" aria-label="Clover gallery filters">
         <label>
           Clover camera
           <select value={cameraId} onChange={(event) => setCameraId(event.target.value)}>
@@ -200,7 +202,8 @@ export function CloverPage() {
             ))}
           </select>
         </label>
-          <div className="segmented-control" aria-label="Clover gallery display mode">
+        <SortSelect value={sort} onChange={setSort} />
+        <div className="segmented-control" aria-label="Clover gallery display mode">
           {(['frames', 'visits'] as const).map((value) => (
             <button key={value} type="button" className={mode === value ? 'is-active' : ''} aria-pressed={mode === value} onClick={() => setMode(value)}>
               {value === 'frames' ? 'All frames' : 'Unique visits'}
@@ -213,6 +216,7 @@ export function CloverPage() {
         <strong>{total.toLocaleString()} {mode === 'frames' ? 'positive frames' : 'unique visits'}</strong>
         <span>Showing {Math.min(visibleCount, total).toLocaleString()}</span>
       </div>
+      {sort === 'sharpness' && <SharpnessNote />}
 
       <div className="gallery-grid">
         {mode === 'frames'
