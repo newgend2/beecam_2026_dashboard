@@ -3,9 +3,10 @@
 
 The input manifest stays local because it contains absolute filesystem paths.
 This script emits native-resolution padded detection crops, dashboard JSON,
-two curated CSV manifests, and a deterministic ZIP containing every crop. Each
-crop is scored for sharpness (sharpness.py) and its Bombus boxes are recorded in
-scripts/crop_boxes.json so the scores can be redone without the manifest.
+curated CSV manifests (all frames, unique visits, tagged-bee visits), and
+deterministic monthly ZIPs of the crops. Each crop is scored for sharpness
+(sharpness.py) and its Bombus boxes are recorded in scripts/crop_boxes.json so
+the scores can be redone without the manifest.
 """
 
 from __future__ import annotations
@@ -24,6 +25,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
+from export_tagged_visits import export as export_tagged_visits
 from sharpness import bee_sharpness, boxes_in_crop, representative_index, update_crop_boxes
 
 
@@ -369,6 +371,7 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
         ],
     }
     DATA_OUTPUT.write_text(json.dumps(public_data, separators=(",", ":")) + "\n", encoding="utf-8")
+    export_tagged_visits(DATA_OUTPUT)
     update_crop_boxes("positives/crops/", {
         f"positives/crops/{frame.crop_filename}": [frame.crop_width, frame.crop_height, [list(box) for box in frame.bee_boxes]]
         for frame in frames

@@ -31,7 +31,7 @@ function percent(value: number, digits = 0): string {
 export function CloverPage() {
   const [mode, setMode] = useState<GalleryMode>('frames')
   const [cameraId, setCameraId] = useState<string>('all')
-  const [sort, setSort] = useState<GallerySort>('time')
+  const [sort, setSort] = useState<GallerySort>('sharpness')
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [lightbox, setLightbox] = useState<LightboxState | null>(null)
 

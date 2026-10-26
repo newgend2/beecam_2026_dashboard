@@ -41,8 +41,10 @@ and combines historical Camera 18 with Camera 19 at F5. For each source frame,
 it makes one native-pixel WebP crop around the union of its detection boxes,
 with a 200-pixel border clamped to the source image.
 
-It regenerates the browser data, 6,134 crop assets, two privacy-safe CSV files,
-and three monthly crop ZIPs (each under GitHub's 100 MB limit). A visit's gallery representative is the sharpest crop in its
+It regenerates the browser data, 6,134 crop assets, three privacy-safe CSV files
+(all frames, unique visits, and tagged-bee visits from `scripts/export_tagged_visits.py`),
+and three monthly crop ZIPs (each under GitHub's 100 MB limit). The download panel reads each
+file's size at build time (`vite.config.ts`), so sizes never need editing by hand. A visit's gallery representative is the sharpest crop in its
 temporal group, with proximity to the group's midpoint used to break ties.
 
 Archive-cohort frames carry whole-second timestamps, so frames that share a second get
@@ -61,6 +63,9 @@ CUDA_VISIBLE_DEVICES= ~/Desktop/beecam_2026/bombus_cascade/.venv/bin/python \
 ```
 
 The model tab's other figures live in `src/data/model-stats.json`, each with its source.
+The frames-recorded total there (also on the Overview) is an exact count of the transferred
+2026 Emerald Queen frames inside the raw ZIPs on slugger, de-duplicated by camera, date and
+timestamp; recount it if more cards are transferred.
 
 ## Data boundaries
 
@@ -82,9 +87,11 @@ Scoring only the bee, at one scale, keeps the score about the bee. Over a whole 
 variance mostly rewards sensor grain and the speckled targets, which put blurred
 fly-throughs near the top.
 
-The score picks each visit's representative frame, orders the gallery's "Sharpest first"
-sort, and limits the Overview slideshow to the sharpest tenth of visits
-(`LANDING_SHARPEST_SHARE` in `src/data/positives.ts`). Both refresh scripts score crops as
+The score picks each visit's representative frame and orders the gallery's default
+"Sharpest first" sort. The Overview slideshow takes each camera-day's sharpest visit, if it
+is at least as sharp as the median visit, keeps up to six per camera
+(`LANDING_VISITS_PER_CAMERA` in `src/data/positives.ts`), and plays them in rounds of one
+visit per camera so no single busy camera or day dominates. Both refresh scripts score crops as
 they make them and record each crop's boxes, in crop coordinates, in
 `scripts/crop_boxes.json`. After a change to the scoring, rescore the published crops
 without the private manifests:

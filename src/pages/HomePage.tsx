@@ -3,29 +3,20 @@ import { DownloadPanel } from '../components/DownloadPanel'
 import {
   assetUrl,
   formatCaptureDate,
+  landingSlideOrder,
   positiveSummary,
-  sharpestVisits,
   visitRepresentativeFrame,
 } from '../data/positives'
 import modelStats from '../data/model-stats.json'
-import type { DashboardTab, PositiveVisit } from '../types'
+import { projectSites } from '../data/project-sites'
+import type { DashboardTab } from '../types'
 
 interface HomePageProps {
   onNavigate: (tab: DashboardTab) => void
 }
 
-/** The slideshow shows only the sharpest visits, in random order. */
-function shuffledVisits(): PositiveVisit[] {
-  const values = [...sharpestVisits]
-  for (let index = values.length - 1; index > 0; index -= 1) {
-    const swap = Math.floor(Math.random() * (index + 1))
-    ;[values[index], values[swap]] = [values[swap], values[index]]
-  }
-  return values
-}
-
 export function HomePage({ onNavigate }: HomePageProps) {
-  const visits = useMemo(shuffledVisits, [])
+  const visits = useMemo(() => landingSlideOrder(), [])
   const [slideIndex, setSlideIndex] = useState(0)
   const [paused, setPaused] = useState(false)
   const visit = visits[slideIndex]
@@ -64,8 +55,8 @@ export function HomePage({ onNavigate }: HomePageProps) {
               <span>unique visits</span>
             </article>
             <article>
-              <strong>~{Math.round(modelStats.imagesRecorded.value / 1e6)}M</strong>
-              <span>images recorded</span>
+              <strong>{modelStats.imagesRecorded.value.toLocaleString()}</strong>
+              <span>frames recorded</span>
             </article>
           </div>
           <div className="hero-actions">
@@ -117,6 +108,21 @@ export function HomePage({ onNavigate }: HomePageProps) {
       </section>
 
       <DownloadPanel />
+
+      <section className="project-sites" aria-labelledby="project-sites-title">
+        <div>
+          <p className="eyebrow">More from BeeCam</p>
+          <h2 id="project-sites-title">Related project sites</h2>
+        </div>
+        <div className="project-site-links">
+          {projectSites.map((site) => (
+            <a key={site.url} href={site.url} target="_blank" rel="noreferrer">
+              <strong>{site.title} <span aria-hidden="true">↗</span></strong>
+              <span>{site.description}</span>
+            </a>
+          ))}
+        </div>
+      </section>
     </main>
   )
 }

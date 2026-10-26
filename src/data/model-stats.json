@@ -1,19 +1,18 @@
 {
-  "asOf": "2026-10-09",
+  "asOf": "2026-10-26",
   "imagesRecorded": {
-    "value": 5000000,
-    "cameraDays": 1015,
+    "value": 3654917,
+    "cameraDays": 1142,
     "dateMin": "2026-05-02",
     "dateMax": "2026-08-23",
-    "source": "Placeholder estimate of about 5 million 2026 frames, including frames still on SD cards that have not been transferred. Of these, 3,289,982 are counted in the transferred raw 2026 ZIPs (62 May\u2013June ZIPs on the lab NAS and 84 June\u2013August ZIPs on the Expansion drive, de-duplicated by camera-day).",
-    "isEstimate": true,
-    "countedInStorage": 3289982
+    "isEstimate": false,
+    "source": "Exact count of every 2026 Emerald Queen frame transferred from the cameras' SD cards, counted inside the raw ZIPs and de-duplicated by camera, date and timestamp, with empty files skipped. That is 3,278,875 frames from the May–August archive (62 ZIPs on the lab NAS, 84 on the Expansion drive) and 376,042 from the late-July California cards, over 1,142 camera-days from May 2 to August 23. One camera-day with a reset clock is included. The Oregon clover timelapse cameras are counted separately on the Clover cams tab."
   },
   "humanReviewed": {
-    "value": 24849,
-    "annotated": 13421,
-    "background": 11428,
-    "source": "bombus_cascade live manifest (canonical_review_20261013T052052_69079a.csv), 2026 rows with review_state annotated or reviewed_negative."
+    "value": 26739,
+    "annotated": 14369,
+    "background": 12370,
+    "source": "bombus_cascade live manifest (curation_20261026T192955.csv), 2026 Emerald Queen rows with review_state annotated or reviewed_negative. The Oregon clover review adds 1,510 more (596 with insects, 914 background), not counted here."
   },
   "confirmedBombus": {
     "frames": 6134,

@@ -1,7 +1,7 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import App from './App'
-import { positiveFrames, sharpestVisits } from './data/positives'
+import { landingVisitsByCamera, positiveFrames } from './data/positives'
 
 describe('BeeCam dashboard', () => {
   beforeEach(() => {
@@ -29,11 +29,27 @@ describe('BeeCam dashboard', () => {
     expect(screen.getByRole('link', { name: /Detection crops, May/ })).toBeInTheDocument()
   })
 
-  it('shows only the sharpest visits in the landing slideshow', () => {
+  it('draws the landing slideshow from the camera-balanced pool', () => {
     render(<App />)
     const slide = screen.getByAltText(/^Bumble bee detection from Camera/)
-    const sharpestCrops = sharpestVisits.map(({ representativeCropPath }) => representativeCropPath)
-    expect(sharpestCrops.some((cropPath) => slide.getAttribute('src')?.endsWith(cropPath))).toBe(true)
+    const poolCrops = landingVisitsByCamera.flat().map(({ representativeCropPath }) => representativeCropPath)
+    expect(poolCrops.some((cropPath) => slide.getAttribute('src')?.endsWith(cropPath))).toBe(true)
+  })
+
+  it('offers the tagged bee table, sized crop ZIPs and the related project sites', () => {
+    render(<App />)
+    expect(screen.getByRole('link', { name: /Tagged bee visits/ })).toHaveAttribute(
+      'href',
+      expect.stringContaining('tagged_bee_visits_2026.csv'),
+    )
+    expect(screen.getByRole('link', { name: /Detection crops, July–August/ })).toHaveTextContent(/ZIP · \d+\.\d MB/)
+    for (const name of ['BeeCam assembly', 'Cocoon cam tagged bees']) {
+      expect(screen.getAllByRole('link', { name: new RegExp(name) }).length).toBe(2)
+    }
+    expect(screen.getAllByRole('link', { name: /BeeCam assembly/ })[0]).toHaveAttribute(
+      'href',
+      'https://newgend2.github.io/beecam-design/',
+    )
   })
 
   it('navigates to the camera-status view and supports keyboard selection', () => {
@@ -69,7 +85,7 @@ describe('BeeCam dashboard', () => {
     expect(screen.getByText('Showing 48')).toBeInTheDocument()
 
     fireEvent.click(screen.getAllByRole('button', { name: /^Open detection from/ })[0])
-    expect(screen.getByRole('dialog', { name: /May/ })).toBeInTheDocument()
+    expect(screen.getByRole('dialog', { name: /2026/ })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Download crop' })).toHaveAttribute(
       'href',
       expect.stringMatching(/positives\/crops\/.+\.webp$/),
@@ -78,13 +94,12 @@ describe('BeeCam dashboard', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  it('sorts the gallery sharpest first on request', () => {
+  it('sorts the gallery sharpest first by default, with capture time on request', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('link', { name: 'Gallery' }))
 
     const sort = screen.getByRole('combobox', { name: 'Sort by' })
-    expect(sort).toHaveValue('time')
-    fireEvent.change(sort, { target: { value: 'sharpness' } })
+    expect(sort).toHaveValue('sharpness')
     expect(screen.getByText(/variance of the Laplacian/)).toBeInTheDocument()
 
     const sharpest = [...positiveFrames].sort((a, b) => b.sharpness - a.sharpness)[0]
@@ -92,6 +107,15 @@ describe('BeeCam dashboard', () => {
     expect(screen.getByRole('link', { name: 'Download crop' })).toHaveAttribute(
       'href',
       expect.stringContaining(sharpest.cropPath),
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Close image viewer' }))
+
+    fireEvent.change(sort, { target: { value: 'time' } })
+    expect(screen.queryByText(/variance of the Laplacian/)).not.toBeInTheDocument()
+    fireEvent.click(screen.getAllByRole('button', { name: /^Open detection from/ })[0])
+    expect(screen.getByRole('link', { name: 'Download crop' })).toHaveAttribute(
+      'href',
+      expect.stringContaining(positiveFrames[0].cropPath),
     )
   })
 
@@ -115,7 +139,7 @@ describe('BeeCam dashboard', () => {
 
     expect(screen.getByRole('heading', { name: 'Teaching a model to find Bombus' })).toBeInTheDocument()
     const summary = screen.getByLabelText('Model data summary')
-    expect(within(summary).getByText('~5 million')).toBeInTheDocument()
+    expect(within(summary).getByText('3,654,917')).toBeInTheDocument()
     expect(within(summary).getByText('6,134')).toBeInTheDocument()
     expect(screen.getByLabelText(/Demonstration of the two-stage model/)).toHaveAttribute(
       'src',

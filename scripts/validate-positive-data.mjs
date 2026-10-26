@@ -43,8 +43,19 @@ for (const visit of data.visits) {
   if (visit.sharpness !== sharpestByVisit.get(visit.visitId)) errors.push(`Visit ${visit.visitId} sharpness does not match its sharpest frame`)
 }
 
+const taggedCsv = await readFile(new URL('public/downloads/tagged_bee_visits_2026.csv', root), 'utf8')
+const taggedRows = taggedCsv.trim().split('\n').slice(1).map((line) => line.split(','))
+const expectedTagged = data.visits
+  .filter((visit) => visit.arucoTag || visit.tagIds.length)
+  .flatMap((visit) => (visit.tagIds.length ? visit.tagIds : ['unreadable']).map((tag) => `${tag}|${visit.visitId}`))
+  .sort()
+const publishedTagged = taggedRows.map((row) => `${row[0]}|${row[10]}`).sort()
+if (expectedTagged.join() !== publishedTagged.join()) {
+  errors.push('tagged_bee_visits_2026.csv does not match the tagged visits; run python3 scripts/export_tagged_visits.py')
+}
+
 const privateFields = ['source_path', 'image_id', 'event_id', 'camera_period']
-for (const filename of ['all_positive_frames_2026.csv', 'unique_visits_2026.csv']) {
+for (const filename of ['all_positive_frames_2026.csv', 'unique_visits_2026.csv', 'tagged_bee_visits_2026.csv']) {
   const csv = await readFile(new URL(`public/downloads/${filename}`, root), 'utf8')
   const header = csv.slice(0, csv.indexOf('\n')).split(',')
   for (const field of privateFields) {

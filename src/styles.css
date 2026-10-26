@@ -1618,8 +1618,72 @@ footer {
   gap: 12px;
 }
 
+footer {
+  flex-wrap: wrap;
+}
+
 footer span {
   color: #718d82;
+}
+
+footer nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+footer a {
+  color: #cfe3da;
+}
+
+footer a:hover {
+  color: #fff;
+}
+
+.project-sites {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.75fr) minmax(500px, 1.25fr);
+  align-items: center;
+  gap: 40px;
+  margin-top: 34px;
+  padding: 0 34px;
+}
+
+.project-sites h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.project-site-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.project-site-links a {
+  display: grid;
+  gap: 6px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--ink);
+  background: var(--paper);
+  text-decoration: none;
+}
+
+.project-site-links a:hover {
+  border-color: var(--green);
+}
+
+.project-site-links strong {
+  color: var(--green-dark);
+}
+
+.project-site-links a > span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 @media (max-width: 1050px) {
@@ -1635,7 +1699,8 @@ footer span {
     min-height: 650px;
   }
 
-  .download-panel {
+  .download-panel,
+  .project-sites {
     grid-template-columns: 1fr;
   }
 
@@ -1717,6 +1782,16 @@ footer span {
     margin-inline: -14px;
     padding: 24px 14px;
     border-radius: 0;
+  }
+
+  .project-sites {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 0;
+  }
+
+  .project-site-links {
+    grid-template-columns: 1fr;
   }
 
   .positive-summary-strip span {

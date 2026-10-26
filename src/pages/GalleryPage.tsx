@@ -37,7 +37,7 @@ export function GalleryPage({ initialCell, onFilterConsumed }: GalleryPageProps)
   const [dateFrom, setDateFrom] = useState(positiveSummary.dateMin)
   const [dateTo, setDateTo] = useState(positiveSummary.dateMax)
   const [tagFilter, setTagFilter] = useState<string>('all')
-  const [sort, setSort] = useState<GallerySort>('time')
+  const [sort, setSort] = useState<GallerySort>('sharpness')
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [lightbox, setLightbox] = useState<LightboxState | null>(null)
 

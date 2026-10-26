@@ -42,10 +42,10 @@ describe('Clover cams tab', () => {
     expect(screen.getByText(`${cloverSummary.uniqueVisits} unique visits`)).toBeInTheDocument()
   })
 
-  it('sorts the clover gallery sharpest first on request', () => {
+  it('sorts the clover gallery sharpest first by default', () => {
     render(<App />)
     fireEvent.click(screen.getByRole('link', { name: 'Clover cams (Oregon)' }))
-    fireEvent.change(screen.getByRole('combobox', { name: 'Sort by' }), { target: { value: 'sharpness' } })
+    expect(screen.getByRole('combobox', { name: 'Sort by' })).toHaveValue('sharpness')
 
     const sharpest = [...cloverFrames].sort((a, b) => b.sharpness - a.sharpness)[0]
     fireEvent.click(screen.getAllByRole('button', { name: /^Open detection from/ })[0])

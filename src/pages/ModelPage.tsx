@@ -18,7 +18,7 @@ const steps = [
   },
   {
     title: 'A permissive trigger',
-    body: `The on-camera model proved very permissive: wind-blown debris triggered many false detections. The 2026 season produced about ${Math.round(modelStats.imagesRecorded.value / 1e6)} million saved frames, far more than anyone can review, so we needed a model that finds only Bombus.`,
+    body: `The on-camera model proved very permissive: wind-blown debris triggered many false detections. The 2026 season produced ${modelStats.imagesRecorded.value.toLocaleString()} saved frames, far more than anyone can review, so we needed a model that finds only Bombus.`,
   },
   {
     title: 'Why full-image Bombus detection fell short',
@@ -54,9 +54,9 @@ export function ModelPage() {
 
       <section className="analytics-kpis model-kpis" aria-label="Model data summary">
         <article>
-          <span>Images recorded</span>
-          <strong>~{Math.round(modelStats.imagesRecorded.value / 1e6)} million</strong>
-          <small>2026 season estimate · {modelStats.imagesRecorded.countedInStorage.toLocaleString()} transferred so far</small>
+          <span>Frames recorded</span>
+          <strong>{modelStats.imagesRecorded.value.toLocaleString()}</strong>
+          <small>Every transferred 2026 frame · {modelStats.imagesRecorded.cameraDays.toLocaleString()} camera-days</small>
         </article>
         <article>
           <span>Human-reviewed images</span>
@@ -154,7 +154,7 @@ export function ModelPage() {
       <section className="source-notes" aria-label="Data sources">
         <p className="eyebrow">Where these numbers come from</p>
         <ul>
-          <li><strong>Images recorded.</strong> {modelStats.imagesRecorded.source}</li>
+          <li><strong>Frames recorded.</strong> {modelStats.imagesRecorded.source}</li>
           <li><strong>Human-reviewed images.</strong> {modelStats.humanReviewed.source}</li>
           <li><strong>Confirmed Bombus frames and visits.</strong> {modelStats.confirmedBombus.source}</li>
           <li><strong>Results.</strong> {modelStats.resultsSource}</li>
