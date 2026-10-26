@@ -3,7 +3,8 @@
 
 Reads scripts/crop_boxes.json (the Bombus boxes inside every crop, written by the asset builders) and
 scores each crop with sharpness.bee_sharpness. Every frame gets its score, each visit's representative
-becomes its sharpest frame, and the dashboard JSON and CSV downloads are updated in place. The asset
+becomes its sharpest frame, and the dashboard JSON and CSV downloads (tagged-bee visits included) are
+updated in place. The asset
 builders score crops the same way as they make them, so this is only needed when the scoring changes.
 
   python3 scripts/score_sharpness.py
@@ -18,6 +19,7 @@ from collections import defaultdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from export_tagged_visits import export as export_tagged_visits  # noqa: E402
 from sharpness import CROP_BOXES, bee_sharpness, representative_index  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -86,6 +88,7 @@ def rescore(data_path: Path, frames_csv: Path, visits_csv: Path, boxes: dict[str
 def main() -> int:
     boxes = json.loads(CROP_BOXES.read_text(encoding="utf-8"))["crops"]
     result = {data_path.name: rescore(data_path, frames_csv, visits_csv, boxes) for data_path, frames_csv, visits_csv in DATASETS}
+    export_tagged_visits()  # its rows name each visit's representative crop
     print(json.dumps(result, indent=2))
     return 0
 

@@ -1,4 +1,10 @@
-import { assetUrl, positiveSummary } from '../data/positives'
+import { assetUrl, positiveSummary, positiveVisits } from '../data/positives'
+
+function zipDetail(filename: string): string {
+  return `ZIP · ${(__DOWNLOAD_BYTES__[filename] / 1e6).toFixed(1)} MB`
+}
+
+const taggedVisits = positiveVisits.filter((visit) => visit.arucoTag || visit.tagIds.length).length
 
 const downloads = [
   {
@@ -12,18 +18,23 @@ const downloads = [
     path: 'downloads/unique_visits_2026.csv',
   },
   {
+    title: 'Tagged bee visits',
+    detail: `${taggedVisits} visits · ${positiveSummary.tagIdentities} tag IDs · CSV`,
+    path: 'downloads/tagged_bee_visits_2026.csv',
+  },
+  {
     title: 'Detection crops, May',
-    detail: `ZIP · 33.1 MB`,
+    detail: zipDetail('beecam_positive_crops_2026_may.zip'),
     path: 'downloads/beecam_positive_crops_2026_may.zip',
   },
   {
     title: 'Detection crops, June',
-    detail: `ZIP · 54.7 MB`,
+    detail: zipDetail('beecam_positive_crops_2026_jun.zip'),
     path: 'downloads/beecam_positive_crops_2026_jun.zip',
   },
   {
     title: 'Detection crops, July–August',
-    detail: `ZIP · 56.9 MB`,
+    detail: zipDetail('beecam_positive_crops_2026_jul_aug.zip'),
     path: 'downloads/beecam_positive_crops_2026_jul_aug.zip',
   },
 ]
@@ -36,7 +47,9 @@ export function DownloadPanel() {
         <h2 id="downloads-title">Download the positive detections</h2>
         <p>
           Privacy-safe manifests use normalized camera IDs, grid cells, and the
-          two-second visit definition. Local source paths are excluded.
+          two-second visit definition. Local source paths are excluded. The tagged
+          bee table lists each visit by a bee carrying an ArUco or n8tag marker,
+          with the ID read by hand or "unreadable".
         </p>
       </div>
       <div className="download-links">

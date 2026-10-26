@@ -2,11 +2,13 @@ import { describe, expect, it } from 'vitest'
 import {
   buildDailyCumulative,
   framesByVisit,
+  LANDING_VISITS_PER_CAMERA,
+  landingSlideOrder,
+  landingVisitsByCamera,
   locationSummaries,
   positiveFrames,
   positiveSummary,
   positiveVisits,
-  sharpestVisits,
 } from './positives'
 
 describe('normalized positive detections', () => {
@@ -54,12 +56,31 @@ describe('normalized positive detections', () => {
     }
   })
 
-  it('feeds the landing slideshow only the sharpest tenth of visits', () => {
-    expect(sharpestVisits).toHaveLength(Math.round(positiveVisits.length / 10))
-    const cutoff = Math.min(...sharpestVisits.map(({ sharpness }) => sharpness))
-    const chosen = new Set(sharpestVisits.map(({ visitId }) => visitId))
-    for (const visit of positiveVisits) {
-      if (!chosen.has(visit.visitId)) expect(visit.sharpness).toBeLessThanOrEqual(cutoff)
+  it('feeds the landing slideshow sharp visits spread across cameras and days', () => {
+    const pool = landingVisitsByCamera.flat()
+    const sharpnesses = positiveVisits.map(({ sharpness }) => sharpness).sort((a, b) => a - b)
+    const median = sharpnesses[Math.floor(sharpnesses.length / 2)]
+    expect(pool.every(({ sharpness }) => sharpness >= median)).toBe(true)
+    expect(new Set(pool.map(({ cameraId, date }) => `${cameraId}|${date}`)).size).toBe(pool.length)
+
+    const camerasAboveMedian = new Set(positiveVisits.filter(({ sharpness }) => sharpness >= median).map(({ cameraId }) => cameraId))
+    expect(landingVisitsByCamera).toHaveLength(camerasAboveMedian.size)
+    for (const visits of landingVisitsByCamera) {
+      expect(visits.length).toBeLessThanOrEqual(LANDING_VISITS_PER_CAMERA)
+      expect(new Set(visits.map(({ cameraId }) => cameraId)).size).toBe(1)
+    }
+  })
+
+  it('never shows the same camera twice in a row in the slideshow', () => {
+    let seed = 1
+    const random = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646
+    for (let run = 0; run < 20; run += 1) {
+      const order = landingSlideOrder(random)
+      expect(order).toHaveLength(landingVisitsByCamera.flat().length)
+      expect(new Set(order.map(({ visitId }) => visitId)).size).toBe(order.length)
+      for (let index = 1; index < order.length; index += 1) {
+        expect(order[index].cameraId).not.toBe(order[index - 1].cameraId)
+      }
     }
   })
 

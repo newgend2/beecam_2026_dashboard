@@ -10,8 +10,8 @@ export function SortSelect({ value, onChange }: SortSelectProps) {
     <label>
       Sort by
       <select value={value} onChange={(event) => onChange(event.target.value as GallerySort)}>
-        <option value="time">Capture time</option>
         <option value="sharpness">Sharpest first</option>
+        <option value="time">Capture time</option>
       </select>
     </label>
   )

@@ -113,13 +113,58 @@ export function sortForGallery<T extends { sharpness: number }>(items: T[], sort
   return sort === 'sharpness' ? [...items].sort((a, b) => b.sharpness - a.sharpness) : items
 }
 
-/** Share of visits, sharpest first, that the landing-page slideshow draws from. */
-export const LANDING_SHARPEST_SHARE = 0.1
+/** Most visits the landing-page slideshow takes from any one camera. */
+export const LANDING_VISITS_PER_CAMERA = 6
 
-export const sharpestVisits = sortForGallery(positiveVisits, 'sharpness').slice(
-  0,
-  Math.round(positiveVisits.length * LANDING_SHARPEST_SHARE),
-)
+/**
+ * The landing-page slideshow's pool, grouped by camera: each camera-day's sharpest visit, if it is at
+ * least as sharp as the median visit, keeping each camera's sharpest few. A busy camera-day such as
+ * Camera 1 on Jul 7 then shows one bee, not dozens.
+ */
+export const landingVisitsByCamera: PositiveVisit[][] = (() => {
+  const sharpnesses = positiveVisits.map(({ sharpness }) => sharpness).sort((a, b) => a - b)
+  const median = sharpnesses[Math.floor(sharpnesses.length / 2)]
+  const bestByCameraDay = new Map<string, PositiveVisit>()
+  for (const visit of positiveVisits) {
+    if (visit.sharpness < median) continue
+    const key = `${visit.cameraId}|${visit.date}`
+    const best = bestByCameraDay.get(key)
+    if (!best || visit.sharpness > best.sharpness) bestByCameraDay.set(key, visit)
+  }
+  const byCamera = new Map<number, PositiveVisit[]>()
+  for (const visit of sortForGallery([...bestByCameraDay.values()], 'sharpness')) {
+    const visits = byCamera.get(visit.cameraId) ?? []
+    if (visits.length < LANDING_VISITS_PER_CAMERA) visits.push(visit)
+    byCamera.set(visit.cameraId, visits)
+  }
+  return [...byCamera.values()]
+})()
+
+function shuffle<T>(values: T[], random: () => number): T[] {
+  const shuffled = [...values]
+  for (let index = shuffled.length - 1; index > 0; index -= 1) {
+    const swap = Math.floor(random() * (index + 1))
+    ;[shuffled[index], shuffled[swap]] = [shuffled[swap], shuffled[index]]
+  }
+  return shuffled
+}
+
+/**
+ * Slideshow order: rounds that each show one visit from every camera still holding some, cameras in
+ * random order, so the same camera never appears twice in a row.
+ */
+export function landingSlideOrder(random: () => number = Math.random): PositiveVisit[] {
+  const queues = landingVisitsByCamera.map((visits) => shuffle(visits, random))
+  const order: PositiveVisit[] = []
+  while (queues.some((queue) => queue.length)) {
+    const round = shuffle(queues.filter((queue) => queue.length), random)
+    if (round.length > 1 && round[0][0].cameraId === order.at(-1)?.cameraId) {
+      ;[round[0], round[1]] = [round[1], round[0]]
+    }
+    for (const queue of round) order.push(queue.shift() as PositiveVisit)
+  }
+  return order
+}
 
 /** "aruco:305" -> "ArUco 305", "n8tag:39" -> "n8tag 39"; anything else (e.g. unreadable) is shown as read. */
 export function formatTagId(tagId: string): string {

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
+import { projectSites } from './data/project-sites'
 import { AnalyticsPage } from './pages/AnalyticsPage'
 import { CloverPage } from './pages/CloverPage'
 import { CameraStatusPage } from './pages/CameraStatusPage'
@@ -91,6 +92,11 @@ function App() {
       <footer>
         <p>BeeCam 2026 · Bumble bee monitoring research</p>
         <span>{activeTab === 'clover' ? 'Clover field · near Philomath, Oregon' : 'Emerald Queen · Willow Creek, California'}</span>
+        <nav aria-label="Related BeeCam sites">
+          {projectSites.map((site) => (
+            <a key={site.url} href={site.url} target="_blank" rel="noreferrer">{site.title}</a>
+          ))}
+        </nav>
       </footer>
     </>
   )
