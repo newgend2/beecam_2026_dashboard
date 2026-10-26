@@ -111,3 +111,20 @@ representative-frame and two-second visit rules as the main gallery. Site detail
 `src/data/clover-site.json` and the recall analysis figures in `src/data/clover-recall.json`.
 `scripts/export_cascade_positives.py` exports only site `emerald_queen`, so clover frames
 never enter the main gallery.
+
+## Position in the frame (Analytics tab)
+
+`src/data/position-analytics.json` holds only aggregated, normalised numbers. Rebuild it after a
+positives or clover refresh:
+
+```bash
+# on slugger, read-only against bombus_cascade
+(cd ~/Desktop/beecam_2026/bombus_cascade && .venv/bin/python scripts/export_clover_box_positions.py)
+python3 scripts/export_cascade_positives.py   # if not already current
+python3 scripts/build_position_analytics.py
+```
+
+Emerald Queen boxes come from the private positives manifest, with each visit weighted once. Clover
+boxes and the trigger test come from the reviewed timelapse cohort (int8 field model at 0.25, the
+camera's stale filter replayed), with 10 s visits. `scripts/validate-position-data.mjs` checks the
+totals against positive-data.json, clover-data.json and model-stats.json.
