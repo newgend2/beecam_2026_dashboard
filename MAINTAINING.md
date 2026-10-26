@@ -126,5 +126,5 @@ python3 scripts/build_position_analytics.py
 
 Emerald Queen boxes come from the private positives manifest, with each visit weighted once. Clover
 boxes and the trigger test come from the reviewed timelapse cohort (int8 field model at 0.25, the
-camera's stale filter replayed), with 10 s visits. `scripts/validate-position-data.mjs` checks the
+camera's stale filter replayed), with visits by the same 2 s rule. `scripts/validate-position-data.mjs` checks the
 totals against positive-data.json, clover-data.json and model-stats.json.

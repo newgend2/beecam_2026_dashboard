@@ -39,8 +39,7 @@ RINGS = [(0.1, "Outer ring"), (0.25, "Middle ring"), (0.51, "Centre")]  # by the
 RADIAL_BINS = 8
 SIZE_BINS = [0, 0.0025, 0.005, 0.01, 0.02, 0.04, 1.0]  # box area as a share of the frame
 SIZE_LABELS = ["<0.25%", "0.25–0.5%", "0.5–1%", "1–2%", "2–4%", "≥4%"]
-VISIT_GAP = 2.0            # dashboard visit rule (seconds) for Emerald Queen
-CLOVER_VISIT_GAP = 10.0    # timelapse visit rule used by the clover evaluation
+VISIT_GAP = 2.0            # dashboard visit rule (seconds), both sites, as on the gallery and Clover tabs
 BOOT = 1000
 
 
@@ -102,7 +101,7 @@ def eq_boxes() -> list[dict]:
 
 
 def clover_boxes() -> list[dict]:
-    """Clover boxes grouped into 10 s visits; each visit counts once, its boxes sharing that weight in
+    """Clover boxes grouped into visits by the dashboard's 2 s rule; each visit counts once, its boxes sharing that weight in
     proportion to their frames' inverse-inclusion weights (Q2/Q3 frames stand for many unreviewed ones)."""
     data = json.loads(CLOVER.read_text())
     boxes = []
@@ -113,7 +112,7 @@ def clover_boxes() -> list[dict]:
     boxes.sort(key=lambda b: (b["camera"], b["t"]))
     visit, last = 0, None
     for b in boxes:
-        if last is None or last[0] != b["camera"] or b["t"] - last[1] > CLOVER_VISIT_GAP:
+        if last is None or last[0] != b["camera"] or b["t"] - last[1] >= VISIT_GAP:
             visit += 1
         b["visit"] = visit
         last = (b["camera"], b["t"])
@@ -273,7 +272,7 @@ def main() -> int:
             "boxes": len(clover), "frames": len({b["group"] for b in clover}), "visits": len({b["visit"] for b in clover}),
             "cameras": len({b["camera"] for b in clover}), "estBoxes": sum(b["weight"] for b in clover),
             "capture": "Timelapse: every frame saved, no trigger",
-            "weighting": "each 10 s visit counts once; within a visit, boxes are weighted by inverse inclusion probability",
+            "weighting": "each visit (2 s rule) counts once; within a visit, boxes are weighted by inverse inclusion probability",
             **{k: clover_stats[k] for k in ("heat", "x", "y", "size", "thirds", "rings", "radial")},
             "arrival": {k: clover_arrive[k] for k in ("heat", "thirds", "rings", "edgeShare", "meanRadial")},
             "headline": headline(clover, 2),
