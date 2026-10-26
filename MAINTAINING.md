@@ -41,7 +41,7 @@ and combines historical Camera 18 with Camera 19 at F5. For each source frame,
 it makes one native-pixel WebP crop around the union of its detection boxes,
 with a 200-pixel border clamped to the source image.
 
-It regenerates the browser data, 5,527 crop assets, two privacy-safe CSV files,
+It regenerates the browser data, 6,134 crop assets, two privacy-safe CSV files,
 and three monthly crop ZIPs (each under GitHub's 100 MB limit). A visit's gallery representative is the sharpest crop in its
 temporal group, with proximity to the group's midpoint used to break ties.
 

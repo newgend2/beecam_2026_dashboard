@@ -6,16 +6,16 @@ const data = JSON.parse(
 )
 const errors = []
 
-if (data.summary.totalFrames !== 5536) errors.push(`Expected 5536 frames; found ${data.summary.totalFrames}`)
-if (data.summary.uniqueVisits !== 1453) errors.push(`Expected 1453 visits; found ${data.summary.uniqueVisits}`)
+if (data.summary.totalFrames !== 6134) errors.push(`Expected 6134 frames; found ${data.summary.totalFrames}`)
+if (data.summary.uniqueVisits !== 1614) errors.push(`Expected 1614 visits; found ${data.summary.uniqueVisits}`)
 if (data.frames.length !== data.summary.totalFrames) errors.push('Frame summary does not match frame records')
 if (data.visits.length !== data.summary.uniqueVisits) errors.push('Visit summary does not match visit records')
 
 const cropNames = new Set(data.frames.map((frame) => frame.cropPath.split('/').at(-1)))
 const cropDirectory = new URL('public/positives/crops/', root)
 const cropFiles = (await readdir(cropDirectory)).filter((name) => name.endsWith('.webp'))
-if (cropNames.size !== 5536 || cropFiles.length !== 5536) {
-  errors.push(`Expected 5536 unique crop files; JSON=${cropNames.size}, files=${cropFiles.length}`)
+if (cropNames.size !== 6134 || cropFiles.length !== 6134) {
+  errors.push(`Expected 6134 unique crop files; JSON=${cropNames.size}, files=${cropFiles.length}`)
 }
 
 for (const frame of data.frames) {
@@ -27,7 +27,7 @@ for (const frame of data.frames) {
 }
 
 const representatives = data.frames.filter((frame) => frame.isRepresentative)
-if (representatives.length !== 1453) errors.push(`Expected 1453 representative frames; found ${representatives.length}`)
+if (representatives.length !== 1614) errors.push(`Expected 1614 representative frames; found ${representatives.length}`)
 
 const cropBoxes = JSON.parse(await readFile(new URL('scripts/crop_boxes.json', root), 'utf8')).crops
 const sharpestByVisit = new Map()
