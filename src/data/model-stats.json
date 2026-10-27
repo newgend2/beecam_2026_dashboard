@@ -1,5 +1,5 @@
 {
-  "asOf": "2026-10-26",
+  "asOf": "2026-10-27",
   "imagesRecorded": {
     "value": 3654917,
     "cameraDays": 1142,
@@ -22,23 +22,32 @@
   },
   "results": [
     {
-      "label": "Round 4 cascade",
+      "label": "Round 6 cascade",
       "kind": "development",
-      "data": "Field development camera-days",
-      "images": 2330,
-      "tp": 247,
-      "fp": 14,
-      "fn": 12
+      "data": "Development set, 2026 camera-days",
+      "images": 4141,
+      "tp": 802,
+      "fp": 18,
+      "fn": 21
     },
     {
-      "label": "Round 3 cascade",
+      "label": "Round 6 cascade",
       "kind": "held-out",
-      "data": "Test cohort of 20 unseen camera-days",
-      "images": 1253,
-      "tp": 114,
-      "fp": 10,
-      "fn": 9
+      "data": "Test cohort v6, 25 unseen June–July camera-days",
+      "images": 1421,
+      "tp": 119,
+      "fp": 5,
+      "fn": 8
+    },
+    {
+      "label": "Round 5 cascade",
+      "kind": "held-out",
+      "data": "Test cohort v6, same frames, for comparison",
+      "images": 1421,
+      "tp": 120,
+      "fp": 14,
+      "fn": 7
     }
   ],
-  "resultsSource": "bombus_cascade docs/STATE.md: development from round 4 (r4_20261009); held-out from round 3 (r3b_20261009) on test cohort v3, evaluated once with a frozen pipeline."
+  "resultsSource": "bombus_cascade docs/STATE.md and docs/R6_ERRORS_TEST_V6.md. Round 6 is configs/pipelines/r6_20261015.json (the det_r4 detector with the r6_colour_cam and r6_blur classifiers at threshold 0.7157). Development is the 4,141-image development split used to select it. Held-out is test cohort test_eq2026_archive_v6 (1,421 reviewed frames from 25 unseen camera-days), scored once with the frozen pipeline (round 6 118 / 6 / 9, round 5 121 / 13 / 6). The rows show the scores after a review of the error frames corrected a few labels, which retired the cohort; round 6 then found 73 of the 77 positive events."
 }

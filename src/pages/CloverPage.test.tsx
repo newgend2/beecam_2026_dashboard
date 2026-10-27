@@ -33,8 +33,8 @@ describe('Clover cams tab', () => {
     expect(within(summary).getByText('241')).toBeInTheDocument()
 
     const int8 = cloverRecall.settings[0]
-    expect(int8.visitsCaught).toBe(60)
-    expect(int8.visits).toBe(73)
+    expect(int8.visitsCaught).toBe(61)
+    expect(int8.visits).toBe(74)
     expect(screen.getByRole('heading', { name: /Would the camera's own model have saved these bees/ })).toBeInTheDocument()
 
     expect(screen.getByText('241 positive frames')).toBeInTheDocument()

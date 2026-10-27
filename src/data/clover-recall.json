@@ -1,36 +1,36 @@
 {
- "source": "bombus_cascade runs/timelapse_eval_2026/eval_r1_final_v2/results.json",
+ "source": "bombus_cascade runs/timelapse_eval_2026/eval_r1_final_v3/results.json",
  "reviewedFrames": 1510,
  "populationFrames": 335235,
  "settings": [
   {
    "setting": "Camera model (int8) at 0.25",
-   "visitsCaught": 60,
-   "visits": 73,
+   "visitsCaught": 61,
+   "visits": 74,
    "frameRecall": 0.949,
    "bombusPrecision": 0.0223,
    "triggersPerBombusFrame": 42.5
   },
   {
    "setting": "Camera model (int8) at 0.25, stale filter",
-   "visitsCaught": 60,
-   "visits": 73,
+   "visitsCaught": 61,
+   "visits": 74,
    "frameRecall": 0.195,
    "bombusPrecision": 0.0166,
    "triggersPerBombusFrame": 11.7
   },
   {
    "setting": "Full-precision model at 0.43",
-   "visitsCaught": 69,
-   "visits": 73,
+   "visitsCaught": 70,
+   "visits": 74,
    "frameRecall": 0.982,
    "bombusPrecision": 0.0221,
    "triggersPerBombusFrame": 44.4
   },
   {
    "setting": "Full-precision model at 0.25",
-   "visitsCaught": 71,
-   "visits": 73,
+   "visitsCaught": 72,
+   "visits": 74,
    "frameRecall": 0.991,
    "bombusPrecision": 0.008,
    "triggersPerBombusFrame": 123.7
@@ -45,9 +45,9 @@
   },
   {
    "camera": "cam-4",
-   "visits": 5,
-   "int8Caught": 2,
-   "fullPrecisionCaught": 3
+   "visits": 6,
+   "int8Caught": 3,
+   "fullPrecisionCaught": 4
   },
   {
    "camera": "cam11",

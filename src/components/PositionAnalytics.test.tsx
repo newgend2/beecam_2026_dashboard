@@ -7,8 +7,8 @@ describe('position analytics', () => {
   it('shows both heat maps, the comparison and the trigger bias test', () => {
     render(<PositionAnalytics />)
     expect(screen.getByRole('heading', { name: 'Where bees appear in the camera view' })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: /Emerald Queen \(triggered\): share of 1614 visits/ })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: /Clover cams \(timelapse\): share of 137 visits/ })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: /Emerald Queen \(triggered\): share of 1397 visits/ })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: /Clover cams \(timelapse\): share of 116 visits/ })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Would the camera trigger have caught the clover bees?' })).toBeInTheDocument()
     expect(screen.getAllByText(`${position.clover.triggerBias.overall.caught} of ${position.clover.triggerBias.overall.boxes}`, { exact: false }).length).toBeGreaterThan(0)
   })

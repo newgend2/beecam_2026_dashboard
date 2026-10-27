@@ -1,3 +1,4 @@
+import { visitGapAdjective } from '../data/visitRule'
 import { assetUrl, positiveSummary, positiveVisits } from '../data/positives'
 
 function zipDetail(filename: string): string {
@@ -46,8 +47,8 @@ export function DownloadPanel() {
         <p className="eyebrow">Open research data</p>
         <h2 id="downloads-title">Download the positive detections</h2>
         <p>
-          Privacy-safe manifests use normalized camera IDs, grid cells, and the
-          two-second visit definition. Local source paths are excluded. The tagged
+          Privacy-safe manifests use normalized camera IDs, grid cells, and the{' '}
+          {visitGapAdjective} visit definition. Local source paths are excluded. The tagged
           bee table lists each visit by a bee carrying an ArUco or n8tag marker,
           with the ID read by hand or "unreadable".
         </p>

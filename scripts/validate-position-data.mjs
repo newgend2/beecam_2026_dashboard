@@ -13,7 +13,7 @@ if (/\/media\/|\/home\/|\.jpg/.test(text)) errors.push('Position analytics conta
 const eq = position.emeraldQueen
 if (eq.visits !== positives.summary.uniqueVisits) errors.push(`Emerald Queen visits ${eq.visits} != positive-data ${positives.summary.uniqueVisits}`)
 if (eq.boxes !== stats.confirmedBombus.boxes) errors.push(`Emerald Queen boxes ${eq.boxes} != model-stats ${stats.confirmedBombus.boxes}`)
-if (position.clover.visits !== clover.summary.uniqueVisits) errors.push(`Clover visits ${position.clover.visits} != clover-data ${clover.summary.uniqueVisits} (both use the 2 s rule)`)
+if (position.clover.visits !== clover.summary.uniqueVisits) errors.push(`Clover visits ${position.clover.visits} != clover-data ${clover.summary.uniqueVisits} (both use the 5 s rule)`)
 if (position.clover.frames !== clover.summary.totalFrames) errors.push(`Clover frames ${position.clover.frames} != clover-data ${clover.summary.totalFrames}`)
 for (const [name, site] of [['emeraldQueen', eq], ['clover', position.clover]]) {
   for (const key of ['heat', 'size', 'rings']) {

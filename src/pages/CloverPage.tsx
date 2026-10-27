@@ -1,3 +1,4 @@
+import { visitGapAdjective } from '../data/visitRule'
 import { useEffect, useMemo, useState } from 'react'
 import { Lightbox } from '../components/Lightbox'
 import { SharpnessNote, SortSelect } from '../components/SortSelect'
@@ -188,7 +189,7 @@ export function CloverPage() {
           <li>Recall is a ceiling: bees that neither this model nor our Bombus model flagged were never reviewed.</li>
           <li>The timelapse saved one frame per second; in detection mode the camera checks about five per second, so it may catch more visits.</li>
           <li>The camera model's export has a built-in 0.25 score cutoff, so lowering the threshold on the camera cannot recover the missed bees, which were mostly fast, blurred fly-throughs.</li>
-          <li>For this analysis, visits count the long Camera 1 stay on 2026-08-27 as one visit and split others at 10-second gaps; the gallery below uses the dashboard's 2-second rule.</li>
+          <li>For this analysis, visits follow the dashboard's {visitGapAdjective} rule, except that the long Camera 1 stay on 2026-08-27, which was reviewed only every tenth frame, counts as one visit.</li>
         </ul>
       </section>
 
