@@ -52,8 +52,9 @@ const data = positionJson as unknown as PositionData
 const percent = (value: number, digits = 0) => `${(value * 100).toFixed(digits)}%`
 const interval = (ci: [number, number] | null) => (ci ? `${percent(ci[0])}–${percent(ci[1])}` : '')
 
+/** "cam-1" and "cam11" (clover) read as "Camera 1" and "Camera 11", as on the Clover cams tab. */
 function cameraLabel(camera: number | string) {
-  return typeof camera === 'number' ? `Camera ${camera}` : `Clover ${camera.replace('-', ' ').replace('cam', 'cam ')}`
+  return `Camera ${typeof camera === 'number' ? camera : Number(camera.replace(/\D/g, ''))}`
 }
 
 /** Green ramp, light to dark, for the share of visits in a cell. */
@@ -292,7 +293,7 @@ export function PositionAnalytics() {
           </div>
         </div>
         <p className="chart-note">
-          Read these with care. The clover set is small ({clover.frames} frames, {clover.visits} visits, and camera cam-1
+          Read these with care. The clover set is small ({clover.frames} frames, {clover.visits} visits, and Camera 1
           alone holds {clover.perCamera.find((item) => item.camera === 'cam-1')?.visits ?? 0} of them), so the intervals are
           wide. The clover truth also came from model candidates plus human review, with random samples to find bees the
           models missed, so a bee that every model overlooked would be absent here as well. The trigger was matched to a bee

@@ -20,6 +20,14 @@ describe('position analytics', () => {
     expect(screen.getByRole('img', { name: new RegExp(`Emerald Queen \\(triggered\\): share of ${visits} visits`) })).toBeInTheDocument()
   })
 
+  it('names the clover cameras as the Clover cams tab does', () => {
+    render(<PositionAnalytics />)
+    const picker = screen.getByLabelText('Clover cams (timelapse) camera')
+    expect(picker).toHaveTextContent('Camera 1 (')
+    expect(picker).toHaveTextContent('Camera 11 (')
+    expect(picker).not.toHaveTextContent(/cam-?\d/)
+  })
+
   it('weights every visit once, so each map sums to one', () => {
     for (const site of [position.emeraldQueen, position.clover]) {
       expect(site.heat.flat().reduce((sum, value) => sum + value, 0)).toBeCloseTo(1, 2)
