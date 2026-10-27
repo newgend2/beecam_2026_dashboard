@@ -1,3 +1,4 @@
+import { PositionAnalytics } from '../components/PositionAnalytics'
 import { buildDailyCumulative, formatCameraLocation, locationSummaries, positiveSummary } from '../data/positives'
 
 const cumulative = buildDailyCumulative()
@@ -47,6 +48,8 @@ export function AnalyticsPage() {
         </div>
         <CumulativeChart />
       </section>
+
+      <PositionAnalytics />
     </main>
   )
 }
