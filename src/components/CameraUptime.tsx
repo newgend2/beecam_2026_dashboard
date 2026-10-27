@@ -177,8 +177,9 @@ export function CameraUptime() {
         </div>
         <p className="chart-intro">
           One row per camera, one cell per day. A pale gap means no transferred card covers that day, either because
-          the camera was not imaging (a card swap, a flat battery or a full card) or because that card is not among the
-          transferred archives. On {s.fallbackCameraDays} camera-days the power log was unusable and the span
+          the camera was not imaging (a card swap, a flat battery or a full card) or because its card was lost. The
+          near-empty stretch from July 9 to 23 is the second case: a case of SD cards holding those days was lost in
+          the field and the images cannot be recovered. On {s.fallbackCameraDays} camera-days the power log was unusable and the span
           from the first to the last saved frame stands in, outlined in gold.
         </p>
         <CameraTimeline />
