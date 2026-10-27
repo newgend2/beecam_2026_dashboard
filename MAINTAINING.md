@@ -142,6 +142,8 @@ python3 scripts/build_position_analytics.py
 ```
 
 `regroup_visits.py` reruns the builders' own grouping and writers on the published JSON, so it
-reproduces a full rebuild exactly. The validators check that every visit obeys the rule. The clover
+reproduces a full rebuild exactly. After a tag-only change in the cascade manifest, run
+`python3 scripts/export_cascade_positives.py && python3 scripts/regroup_visits.py --refresh-tags`
+to update frame tags without new crops. The validators check that every visit obeys the rule. The clover
 recall analysis reads its visit numbers from the bombus_cascade evaluation (`gap5_edge_as_one` in
 `eval_r1_final_v3`), which has to be rerun for a different gap.
