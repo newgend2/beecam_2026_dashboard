@@ -208,7 +208,7 @@ def main() -> int:
                    + " cards): a session runs from each logged boot to the first of the explicit shutdown, the scheduled "
                    "shutdown or the next boot, and a card counts only from its first to its last saved image. "
                    "Camera-days with saved frames but no usable log session count the span from first to last frame. "
-                   "Cards not yet copied off the cameras are not included."),
+                   "Cards lost with an SD card case (about July 9 to 23) could not be included."),
     }
     OUTPUT.write_text(json.dumps(data, indent=1) + "\n", encoding="utf-8")
     print(json.dumps(data["summary"], indent=1))

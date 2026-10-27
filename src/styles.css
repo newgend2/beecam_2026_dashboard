@@ -1655,6 +1655,22 @@ body.modal-open {
   background: var(--gold);
 }
 
+.lost-cards-fill {
+  fill: rgb(225 170 40 / 10%);
+}
+
+.lost-cards-line {
+  stroke: rgb(225 170 40 / 55%);
+  stroke-width: 2;
+}
+
+.uptime-key--lost {
+  width: 14px;
+  height: 10px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(45deg, rgb(225 170 40 / 55%) 0 2px, rgb(225 170 40 / 10%) 2px 5px);
+}
+
 .uptime-key--fallback {
   width: 10px;
   height: 10px;

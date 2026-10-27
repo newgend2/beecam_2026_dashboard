@@ -30,6 +30,22 @@ interface UptimeData {
 
 const data = uptimeJson as UptimeData
 
+/** A case of SD cards holding these days was lost, so imaging effort here is undercounted (owner, 2026-10-27). */
+const LOST_CARDS = { from: '2026-07-09', to: '2026-07-23' }
+const lostFrom = data.dates.indexOf(LOST_CARDS.from)
+const lostTo = data.dates.indexOf(LOST_CARDS.to)
+
+function LostCardsPattern() {
+  return (
+    <defs>
+      <pattern id="lost-cards-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <rect width="6" height="6" className="lost-cards-fill" />
+        <line x1="0" y1="0" x2="0" y2="6" className="lost-cards-line" />
+      </pattern>
+    </defs>
+  )
+}
+
 function hoursColor(hours: number) {
   if (hours <= 0) return '#eef2ee'
   const t = Math.min(1, hours / 14)
@@ -76,6 +92,16 @@ function CumulativeEffort() {
           Camera-hours rise from zero to {Math.round(total).toLocaleString()} between {data.summary.dateMin} and {data.summary.dateMax};
           at most {maxCameras} cameras were imaging on one day.
         </desc>
+        <LostCardsPattern />
+        {lostFrom >= 0 && lostTo >= lostFrom && (
+          <g>
+            <rect x={x(lostFrom) - barWidth / 2} y={margin.top} width={x(lostTo) - x(lostFrom) + barWidth}
+              height={barTop + barHeight - margin.top} fill="url(#lost-cards-hatch)">
+              <title>{`${shortDate(LOST_CARDS.from)} to ${shortDate(LOST_CARDS.to)}: cards lost, effort undercounted`}</title>
+            </rect>
+            <text x={(x(lostFrom) + x(lostTo)) / 2} y={margin.top + 14} textAnchor="middle" className="uptime-panel-label">Cards lost</text>
+          </g>
+        )}
         {ticks.map((tick) => (
           <g key={tick}>
             <line x1={margin.left} x2={width - margin.right} y1={y(tick)} y2={y(tick)} />
@@ -114,10 +140,17 @@ function CameraTimeline() {
     <div className="chart-scroll">
       <svg className="uptime-timeline" viewBox={`0 0 ${width} ${height}`} style={{ minWidth: width }} role="img"
         aria-label={`Hours each camera was imaging on each day, ${data.cameras.length} cameras from ${data.summary.dateMin} to ${data.summary.dateMax}`}>
+        <LostCardsPattern />
         {monthTicks.map(({ date, index }) => (
           <text key={date} x={labelWidth + index * cell} y={12}>{shortDate(date)}</text>
         ))}
         <text x={width - totalsWidth + 8} y={12}>Hours · days</text>
+        {lostFrom >= 0 && lostTo >= lostFrom && (
+          <rect x={labelWidth + lostFrom * cell - 1} y={top - 3} width={(lostTo - lostFrom + 1) * cell + 1}
+            height={data.cameras.length * rowHeight + 4} fill="url(#lost-cards-hatch)" rx={2}>
+            <title>{`${shortDate(LOST_CARDS.from)} to ${shortDate(LOST_CARDS.to)}: cards lost, effort undercounted`}</title>
+          </rect>
+        )}
         {data.cameras.map((camera, row) => {
           const y = top + row * rowHeight
           const fallback = new Set(camera.fallbackDates)
@@ -155,14 +188,16 @@ export function CameraUptime() {
           <div className="chart-legend">
             <span><i className="legend-line legend-line--frames" />Cumulative camera-hours</span>
             <span><i className="uptime-key uptime-key--bar" />Cameras imaging that day</span>
+            <span><i className="uptime-key uptime-key--lost" />Cards lost (Jul 9–23)</span>
           </div>
         </div>
         <p className="chart-intro">
           Each camera's power log records when it booted and when it was scheduled to shut down, so the time it spent
           running can be read from its SD cards even on days when nothing triggered it. Time after a card's last saved
           image is left out, because the camera had stopped recording by then (a full card, a camera fault or a flat
-          battery), and so is bench time before its first image. Detections are best compared against this effort, since a camera that ran longer had more chances
-          to see a bee.
+          battery), and so is bench time before its first image. Detections are best compared against this effort, since
+          a camera that ran longer had more chances to see a bee. The cards for July 9 to 23 were lost, so the totals
+          undercount those weeks.
         </p>
         <CumulativeEffort />
       </section>
@@ -173,13 +208,14 @@ export function CameraUptime() {
           <div className="chart-legend">
             <span><i className="heat-key" />0 to 14 or more hours</span>
             <span><i className="uptime-key uptime-key--fallback" />Estimated from frames</span>
+            <span><i className="uptime-key uptime-key--lost" />Cards lost</span>
           </div>
         </div>
         <p className="chart-intro">
-          One row per camera, one cell per day. A pale gap means no transferred card covers that day, either because
-          the camera was not imaging (a card swap, a flat battery or a full card) or because its card was lost. The
-          near-empty stretch from July 9 to 23 is the second case: a case of SD cards holding those days was lost in
-          the field and the images cannot be recovered. On {s.fallbackCameraDays} camera-days the power log was unusable and the span
+          One row per camera, one cell per day. A pale gap means no card covers that day, usually because the camera
+          was not imaging (a card swap, a flat battery or a full card). The hatched stretch from July 9 to 23 is
+          different. A case of SD cards holding those weeks was lost and cannot be recovered, so the cameras were
+          most likely running but their effort, and any bees they saw, are missing from these charts. On {s.fallbackCameraDays} camera-days the power log was unusable and the span
           from the first to the last saved frame stands in, outlined in gold.
         </p>
         <CameraTimeline />
