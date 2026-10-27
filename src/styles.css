@@ -1612,6 +1612,57 @@ body.modal-open {
   stroke: var(--gold);
 }
 
+/* Imaging effort */
+
+.uptime-bar {
+  fill: var(--gold);
+}
+
+.uptime-chart .uptime-panel-label {
+  fill: var(--ink);
+  font-weight: 700;
+}
+
+.uptime-timeline {
+  display: block;
+  height: auto;
+}
+
+.uptime-timeline text {
+  fill: var(--muted);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 9px;
+}
+
+.uptime-timeline .uptime-total {
+  fill: var(--ink);
+  font-weight: 700;
+}
+
+.uptime-fallback {
+  stroke: var(--gold);
+  stroke-width: 1.2;
+}
+
+.uptime-key {
+  display: inline-block;
+}
+
+.uptime-key--bar {
+  width: 8px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--gold);
+}
+
+.uptime-key--fallback {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--gold);
+  border-radius: 2px;
+  background: #d6ecde;
+}
+
 /* Position in the frame */
 
 .visually-hidden {

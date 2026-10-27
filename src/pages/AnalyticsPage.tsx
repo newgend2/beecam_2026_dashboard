@@ -1,3 +1,4 @@
+import { CameraUptime } from '../components/CameraUptime'
 import { PositionAnalytics } from '../components/PositionAnalytics'
 import { buildDailyCumulative, formatCameraLocation, locationSummaries, positiveSummary } from '../data/positives'
 
@@ -48,6 +49,8 @@ export function AnalyticsPage() {
         </div>
         <CumulativeChart />
       </section>
+
+      <CameraUptime />
 
       <PositionAnalytics />
     </main>
