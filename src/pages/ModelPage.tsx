@@ -1,3 +1,4 @@
+import { visitGapAdjective } from '../data/visitRule'
 import modelStats from '../data/model-stats.json'
 import { assetUrl, positiveSummary } from '../data/positives'
 
@@ -29,8 +30,8 @@ const steps = [
     body: 'Stage 1 is a full-image YOLO detector with a single, broad class: any insect. That task is much easier than singling out Bombus. Stage 2 cuts each proposal from the native-resolution frame and passes the crop to a ResNet classifier trained on crops, which decides Bombus or other insect.',
   },
   {
-    title: 'Ongoing refinement',
-    body: 'The remaining errors are mostly blurry, fast-moving insects. The current round adds blur augmentation and more hard examples so the classifier can handle them.',
+    title: 'Round 6',
+    body: 'Each round added hard examples from human review. Round 6 trained its classifiers on the curated visits, with blur augmentation and colour and camera cues, and is the pipeline that now screens new cards. The remaining errors are mostly blurry, fast-moving insects and boxes that only partly cover a bee.',
   },
 ]
 
@@ -71,7 +72,7 @@ export function ModelPage() {
         <article>
           <span>Unique visits</span>
           <strong>{positiveSummary.uniqueVisits.toLocaleString()}</strong>
-          <small>Frames grouped by the two-second rule</small>
+          <small>Frames grouped by the {visitGapAdjective} rule</small>
         </article>
       </section>
 

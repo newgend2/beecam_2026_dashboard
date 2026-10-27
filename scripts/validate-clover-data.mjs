@@ -1,3 +1,4 @@
+import { visitRuleErrors } from './visit-rule.mjs'
 import { readFile, readdir } from 'node:fs/promises'
 
 const root = new URL('../', import.meta.url)
@@ -40,6 +41,7 @@ for (const filename of ['clover_all_positive_frames_2026.csv', 'clover_unique_vi
   for (const field of privateFields) if (header.includes(field)) errors.push(`${filename} exposes private field ${field}`)
 }
 
+errors.push(...visitRuleErrors(data.frames, 'Clover'))
 if (errors.length) {
   console.error(`Clover data validation failed:\n- ${errors.join('\n- ')}`)
   process.exit(1)

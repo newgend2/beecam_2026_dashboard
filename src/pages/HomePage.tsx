@@ -1,3 +1,4 @@
+import { visitGapWords } from '../data/visitRule'
 import { useEffect, useMemo, useState } from 'react'
 import { DownloadPanel } from '../components/DownloadPanel'
 import {
@@ -102,7 +103,7 @@ export function HomePage({ onNavigate }: HomePageProps) {
         <span>How visits are counted</span>
         <p>
           Consecutive frames from the same camera and date remain one visit
-          until the gap between frames reaches two seconds.
+          until a frame arrives more than {visitGapWords} after the previous one.
         </p>
         <button type="button" onClick={() => onNavigate('analytics')}>Explore the analytics →</button>
       </section>

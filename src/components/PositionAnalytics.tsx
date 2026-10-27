@@ -1,3 +1,4 @@
+import { visitGapAdjective } from '../data/visitRule'
 import { useState } from 'react'
 import positionJson from '../data/position-analytics.json'
 
@@ -179,7 +180,7 @@ export function PositionAnalytics() {
         </div>
         <p className="chart-intro">
           Each map divides the full 4056 × 3040 frame into an 8 × 6 grid and places every human-confirmed Bombus box by its
-          centre. Visits follow the dashboard's two-second rule at both sites, and every visit counts once, so a bee that lingered for fifty frames weighs the same as one that flew straight
+          centre. Visits follow the dashboard's {visitGapAdjective} rule at both sites, and every visit counts once, so a bee that lingered for fifty frames weighs the same as one that flew straight
           through. Emerald Queen frames were saved only when the camera's on-board insect model fired, while the four clover
           cameras in Oregon saved a timelapse frame on a fixed schedule whether or not a bee was there.
         </p>

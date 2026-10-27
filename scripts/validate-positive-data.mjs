@@ -1,3 +1,4 @@
+import { visitRuleErrors } from './visit-rule.mjs'
 import { readFile, readdir, stat } from 'node:fs/promises'
 
 const root = new URL('../', import.meta.url)
@@ -7,7 +8,7 @@ const data = JSON.parse(
 const errors = []
 
 if (data.summary.totalFrames !== 6134) errors.push(`Expected 6134 frames; found ${data.summary.totalFrames}`)
-if (data.summary.uniqueVisits !== 1614) errors.push(`Expected 1614 visits; found ${data.summary.uniqueVisits}`)
+if (data.summary.uniqueVisits !== 1397) errors.push(`Expected 1397 visits; found ${data.summary.uniqueVisits}`)
 if (data.frames.length !== data.summary.totalFrames) errors.push('Frame summary does not match frame records')
 if (data.visits.length !== data.summary.uniqueVisits) errors.push('Visit summary does not match visit records')
 
@@ -27,7 +28,7 @@ for (const frame of data.frames) {
 }
 
 const representatives = data.frames.filter((frame) => frame.isRepresentative)
-if (representatives.length !== 1614) errors.push(`Expected 1614 representative frames; found ${representatives.length}`)
+if (representatives.length !== 1397) errors.push(`Expected 1397 representative frames; found ${representatives.length}`)
 
 const cropBoxes = JSON.parse(await readFile(new URL('scripts/crop_boxes.json', root), 'utf8')).crops
 const sharpestByVisit = new Map()
@@ -69,6 +70,7 @@ for (const part of ['may', 'jun', 'jul_aug']) {
   if (archive.size > 100 * 1024 * 1024) errors.push(`Crop ZIP ${part} exceeds GitHub's 100 MB file limit`)
 }
 
+errors.push(...visitRuleErrors(data.frames, 'Emerald Queen'))
 if (errors.length) {
   console.error(`Positive data validation failed:\n- ${errors.join('\n- ')}`)
   process.exit(1)

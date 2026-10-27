@@ -43,7 +43,8 @@ ZIP_OUTPUTS = {  # split by month so each archive stays under GitHub's 100 MB fi
     DOWNLOAD_DIR / "beecam_positive_crops_2026_jul_aug.zip": lambda name: name.split("_")[1][:6] >= "202607",
 }
 
-VISIT_GAP_SECONDS = 2.0
+# a frame starts a new visit only if it comes more than this many seconds after the previous one (shared with the UI)
+VISIT_GAP_SECONDS = float(json.loads((ROOT / "src" / "data" / "visit-rule.json").read_text())["gapSeconds"])
 PADDING_PIXELS = 200
 
 
@@ -165,6 +166,12 @@ def create_crop(source: Path, target: Path, bounds: tuple[int, int, int, int]) -
     return width, height
 
 
+def starts_new_visit(gap_seconds: float) -> bool:
+    """The dashboard's visit rule, shared by every builder: frames of one camera and date stay in one visit
+    until the gap from the previous positive frame exceeds VISIT_GAP_SECONDS."""
+    return gap_seconds > VISIT_GAP_SECONDS
+
+
 def assign_visits(frames: list[Frame]) -> list[Visit]:
     grouped: dict[tuple[int, str], list[Frame]] = defaultdict(list)
     for frame in frames:
@@ -177,7 +184,7 @@ def assign_visits(frames: list[Frame]) -> list[Visit]:
         current: Visit | None = None
         previous: Frame | None = None
         for frame in camera_frames:
-            starts_visit = previous is None or (frame.timestamp - previous.timestamp).total_seconds() >= VISIT_GAP_SECONDS
+            starts_visit = previous is None or starts_new_visit((frame.timestamp - previous.timestamp).total_seconds())
             if starts_visit:
                 daily_visit_number += 1
                 visit_id = f"eq-cam{camera_id:02d}-{date.replace('-', '')}-v{daily_visit_number:03d}"
@@ -216,67 +223,8 @@ def build_zip(crop_dir: Path, output: Path, keep=lambda name: True) -> None:
             archive.writestr(info, crop.read_bytes())
 
 
-def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
-    if shutil.which("convert") is None:
-        raise SystemExit("ImageMagick 'convert' is required")
-    mapping = load_camera_mapping(mapping_path)
-    CROP_DIR.parent.mkdir(parents=True, exist_ok=True)
-    DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
-    DATA_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
-    temporary_crop_dir = CROP_DIR.with_name("crops-building")
-    if temporary_crop_dir.exists():
-        shutil.rmtree(temporary_crop_dir)
-    temporary_crop_dir.mkdir(parents=True)
-
-    with manifest.open(newline="", encoding="utf-8-sig") as handle:
-        source_rows = list(csv.DictReader(handle))
-    required = {"site", "camera", "date", "captured_at", "source_path", "width", "height", "boxes"}
-    missing = required - set(source_rows[0])
-    if missing:
-        raise SystemExit(f"Manifest is missing required columns: {sorted(missing)}")
-
-    frames: list[Frame] = []
-    filenames: set[str] = set()
-    for index, row in enumerate(source_rows, start=1):
-        camera_id = parse_camera_id(row["camera"])
-        if camera_id not in mapping:
-            raise ValueError(f"No grid-cell mapping for Camera {camera_id}")
-        source = Path(row["source_path"])
-        if not source.is_file():
-            raise FileNotFoundError(source)
-        width, height = int(row["width"]), int(row["height"])
-        boxes = json.loads(row["boxes"])
-        bounds = crop_bounds(boxes, width, height)
-        filename = crop_filename(camera_id, row["captured_at"])
-        # Archive-cohort frames carry whole-second timestamps, so a burst can share one.
-        suffix = 1
-        while filename in filenames:
-            suffix += 1
-            filename = crop_filename(camera_id, row["captured_at"]).replace(".webp", f"_{suffix}.webp")
-        filenames.add(filename)
-        target = temporary_crop_dir / filename
-        crop_width, crop_height = create_crop(source, target, bounds)
-        bee_boxes = boxes_in_crop(boxes, bounds)
-        frames.append(
-            Frame(
-                site=row["site"],
-                camera_id=camera_id,
-                grid_cell=mapping[camera_id],
-                date=row["date"],
-                captured_at=row["captured_at"],
-                timestamp=datetime.fromisoformat(row["captured_at"]),
-                crop_filename=filename,
-                crop_width=crop_width,
-                crop_height=crop_height,
-                sharpness=bee_sharpness(target, bee_boxes),
-                aruco=row.get("aruco") == "1",
-                tag_id=row.get("tag_id", ""),
-                bee_boxes=bee_boxes,
-            )
-        )
-        if index % 50 == 0 or index == len(source_rows):
-            print(f"processed {index}/{len(source_rows)} crops", file=sys.stderr)
-
+def write_outputs(frames: list[Frame]) -> list[Visit]:
+    """Group frames into visits and write the dashboard JSON and CSV downloads (also used by regroup_visits.py)."""
     visits = assign_visits(frames)
     frames.sort(key=lambda frame: (frame.timestamp, frame.camera_id))
     visits.sort(key=lambda visit: (visit.frames[0].timestamp, visit.camera_id))
@@ -372,6 +320,71 @@ def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
     }
     DATA_OUTPUT.write_text(json.dumps(public_data, separators=(",", ":")) + "\n", encoding="utf-8")
     export_tagged_visits(DATA_OUTPUT)
+    return visits
+
+
+def build(manifest: Path, mapping_path: Path) -> dict[str, object]:
+    if shutil.which("convert") is None:
+        raise SystemExit("ImageMagick 'convert' is required")
+    mapping = load_camera_mapping(mapping_path)
+    CROP_DIR.parent.mkdir(parents=True, exist_ok=True)
+    DOWNLOAD_DIR.mkdir(parents=True, exist_ok=True)
+    DATA_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    temporary_crop_dir = CROP_DIR.with_name("crops-building")
+    if temporary_crop_dir.exists():
+        shutil.rmtree(temporary_crop_dir)
+    temporary_crop_dir.mkdir(parents=True)
+
+    with manifest.open(newline="", encoding="utf-8-sig") as handle:
+        source_rows = list(csv.DictReader(handle))
+    required = {"site", "camera", "date", "captured_at", "source_path", "width", "height", "boxes"}
+    missing = required - set(source_rows[0])
+    if missing:
+        raise SystemExit(f"Manifest is missing required columns: {sorted(missing)}")
+
+    frames: list[Frame] = []
+    filenames: set[str] = set()
+    for index, row in enumerate(source_rows, start=1):
+        camera_id = parse_camera_id(row["camera"])
+        if camera_id not in mapping:
+            raise ValueError(f"No grid-cell mapping for Camera {camera_id}")
+        source = Path(row["source_path"])
+        if not source.is_file():
+            raise FileNotFoundError(source)
+        width, height = int(row["width"]), int(row["height"])
+        boxes = json.loads(row["boxes"])
+        bounds = crop_bounds(boxes, width, height)
+        filename = crop_filename(camera_id, row["captured_at"])
+        # Archive-cohort frames carry whole-second timestamps, so a burst can share one.
+        suffix = 1
+        while filename in filenames:
+            suffix += 1
+            filename = crop_filename(camera_id, row["captured_at"]).replace(".webp", f"_{suffix}.webp")
+        filenames.add(filename)
+        target = temporary_crop_dir / filename
+        crop_width, crop_height = create_crop(source, target, bounds)
+        bee_boxes = boxes_in_crop(boxes, bounds)
+        frames.append(
+            Frame(
+                site=row["site"],
+                camera_id=camera_id,
+                grid_cell=mapping[camera_id],
+                date=row["date"],
+                captured_at=row["captured_at"],
+                timestamp=datetime.fromisoformat(row["captured_at"]),
+                crop_filename=filename,
+                crop_width=crop_width,
+                crop_height=crop_height,
+                sharpness=bee_sharpness(target, bee_boxes),
+                aruco=row.get("aruco") == "1",
+                tag_id=row.get("tag_id", ""),
+                bee_boxes=bee_boxes,
+            )
+        )
+        if index % 50 == 0 or index == len(source_rows):
+            print(f"processed {index}/{len(source_rows)} crops", file=sys.stderr)
+
+    visits = write_outputs(frames)
     update_crop_boxes("positives/crops/", {
         f"positives/crops/{frame.crop_filename}": [frame.crop_width, frame.crop_height, [list(box) for box in frame.bee_boxes]]
         for frame in frames

@@ -1,0 +1,4 @@
+{
+  "gapSeconds": 5,
+  "rule": "Frames from one camera on one date stay in the same visit until a frame arrives more than gapSeconds after the previous positive frame."
+}

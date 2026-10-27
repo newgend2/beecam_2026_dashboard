@@ -36,7 +36,9 @@ npm run build
 
 The refresh script requires Python 3 and ImageMagick's `convert` command. It
 normalizes `camN` and `cam-N` to Camera N, groups frames into a new visit when
-the gap from the prior frame on that camera and date is at least two seconds,
+the gap from the prior frame on that camera and date is more than five seconds
+(`gapSeconds` in `src/data/visit-rule.json`, read by every builder through
+`starts_new_visit` in `build_positive_assets.py` and by the UI through `src/data/visitRule.ts`),
 and combines historical Camera 18 with Camera 19 at F5. For each source frame,
 it makes one native-pixel WebP crop around the union of its detection boxes,
 with a 200-pixel border clamped to the source image.
@@ -107,7 +109,7 @@ npm run build
 The Clover cams (Oregon) tab is built by `scripts/build_clover_assets.py`
 (`npm run refresh:clover`). It reads the `bombus_cascade` manifest read-only, keeps the
 human-confirmed Bombus frames of site `clover`, and reuses the same crop,
-representative-frame and two-second visit rules as the main gallery. Site details live in
+representative-frame and five-second visit rules as the main gallery. Site details live in
 `src/data/clover-site.json` and the recall analysis figures in `src/data/clover-recall.json`.
 `scripts/export_cascade_positives.py` exports only site `emerald_queen`, so clover frames
 never enter the main gallery.
@@ -126,5 +128,20 @@ python3 scripts/build_position_analytics.py
 
 Emerald Queen boxes come from the private positives manifest, with each visit weighted once. Clover
 boxes and the trigger test come from the reviewed timelapse cohort (int8 field model at 0.25, the
-camera's stale filter replayed), with visits by the same 2 s rule. `scripts/validate-position-data.mjs` checks the
+camera's stale filter replayed), with visits by the same 5 s rule. `scripts/validate-position-data.mjs` checks the
 totals against positive-data.json, clover-data.json and model-stats.json.
+
+## Changing the visit rule
+
+Edit `gapSeconds` in `src/data/visit-rule.json`, then regroup the published frames without rebuilding
+the crops or ZIPs, and rebuild the position analytics:
+
+```bash
+python3 scripts/regroup_visits.py
+python3 scripts/build_position_analytics.py
+```
+
+`regroup_visits.py` reruns the builders' own grouping and writers on the published JSON, so it
+reproduces a full rebuild exactly. The validators check that every visit obeys the rule. The clover
+recall analysis reads its visit numbers from the bombus_cascade evaluation (`gap5_edge_as_one` in
+`eval_r1_final_v3`), which has to be rerun for a different gap.

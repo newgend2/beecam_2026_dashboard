@@ -20,7 +20,7 @@ describe('BeeCam dashboard', () => {
     ).toBeInTheDocument()
     const summary = screen.getByLabelText('Positive detection summary')
     expect(within(summary).getByText('6,134')).toBeInTheDocument()
-    expect(within(summary).getByText('1,614')).toBeInTheDocument()
+    expect(within(summary).getByText('1,397')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /All positive frames/ })).toHaveAttribute(
       'href',
       expect.stringContaining('all_positive_frames_2026.csv'),

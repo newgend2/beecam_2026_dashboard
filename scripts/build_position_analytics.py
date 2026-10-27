@@ -27,6 +27,9 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_positive_assets import VISIT_GAP_SECONDS, starts_new_visit  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 CASCADE = Path.home() / "Desktop" / "beecam_2026" / "bombus_cascade"
 POSITIVES = ROOT / "positives_manifests" / "bombus_positive_timeline_2026.csv"
@@ -39,7 +42,6 @@ RINGS = [(0.1, "Outer ring"), (0.25, "Middle ring"), (0.51, "Centre")]  # by the
 RADIAL_BINS = 8
 SIZE_BINS = [0, 0.0025, 0.005, 0.01, 0.02, 0.04, 1.0]  # box area as a share of the frame
 SIZE_LABELS = ["<0.25%", "0.25–0.5%", "0.5–1%", "1–2%", "2–4%", "≥4%"]
-VISIT_GAP = 2.0            # dashboard visit rule (seconds), both sites, as on the gallery and Clover tabs
 BOOT = 1000
 
 
@@ -85,7 +87,7 @@ def eq_boxes() -> list[dict]:
     for row in rows:
         camera = int(row["camera"].replace("cam", "").replace("-", ""))
         t = datetime.fromisoformat(row["captured_at"]).timestamp()
-        if last is None or last[0] != camera or last[1] != row["date"] or t - last[2] >= VISIT_GAP:
+        if last is None or last[0] != camera or last[1] != row["date"] or starts_new_visit(t - last[2]):
             visit += 1
         last = (camera, row["date"], t)
         W, H = float(row["width"]), float(row["height"])
@@ -101,21 +103,21 @@ def eq_boxes() -> list[dict]:
 
 
 def clover_boxes() -> list[dict]:
-    """Clover boxes grouped into visits by the dashboard's 2 s rule; each visit counts once, its boxes sharing that weight in
+    """Clover boxes grouped into visits by the dashboard's visit rule (build_positive_assets.starts_new_visit); each visit counts once, its boxes sharing that weight in
     proportion to their frames' inverse-inclusion weights (Q2/Q3 frames stand for many unreviewed ones)."""
     data = json.loads(CLOVER.read_text())
     boxes = []
     for b in data["boxes"]:
-        boxes.append({"camera": b["camera"], "group": f"{b['card']}/{b['member']}", "t": b["t"], "card": b["card"],
+        boxes.append({"camera": b["camera"], "group": f"{b['card']}/{b['member']}", "t": b["t"], "date": datetime.fromtimestamp(b["t"]).date().isoformat(), "card": b["card"],
                       "x": b["x"], "y": b["y"], "w": b["w"], "h": b["h"], "weight": b["weight"],
                       "hit": b["int8_hit"], "saved": b["frame_saved"], "inclusionWeight": b["weight"]})
     boxes.sort(key=lambda b: (b["camera"], b["t"]))
     visit, last = 0, None
     for b in boxes:
-        if last is None or last[0] != b["camera"] or b["t"] - last[1] >= VISIT_GAP:
+        if last is None or last[0] != b["camera"] or b["date"] != last[2] or starts_new_visit(b["t"] - last[1]):
             visit += 1
         b["visit"] = visit
-        last = (b["camera"], b["t"])
+        last = (b["camera"], b["t"], b["date"])
     totals = defaultdict(float)
     for b in boxes:
         totals[b["visit"]] += b["inclusionWeight"]
@@ -272,7 +274,7 @@ def main() -> int:
             "boxes": len(clover), "frames": len({b["group"] for b in clover}), "visits": len({b["visit"] for b in clover}),
             "cameras": len({b["camera"] for b in clover}), "estBoxes": sum(b["weight"] for b in clover),
             "capture": "Timelapse: every frame saved, no trigger",
-            "weighting": "each visit (2 s rule) counts once; within a visit, boxes are weighted by inverse inclusion probability",
+            "weighting": f"each visit ({VISIT_GAP_SECONDS:g} s rule) counts once; within a visit, boxes are weighted by inverse inclusion probability",
             **{k: clover_stats[k] for k in ("heat", "x", "y", "size", "thirds", "rings", "radial")},
             "arrival": {k: clover_arrive[k] for k in ("heat", "thirds", "rings", "edgeShare", "meanRadial")},
             "headline": headline(clover, 2),
