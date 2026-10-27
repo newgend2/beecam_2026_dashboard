@@ -157,7 +157,7 @@ function CameraTimeline() {
           return (
             <g key={camera.cameraId}>
               <text x={0} y={y + 10}>Camera {camera.cameraId} · {camera.gridCell}</text>
-              {camera.daily.map((hours, index) => (
+              {camera.daily.map((hours, index) => hours <= 0 && index >= lostFrom && index <= lostTo ? null : (
                 <rect key={index} x={labelWidth + index * cell} y={y} width={cell - 1} height={rowHeight - 2} rx={1.5}
                   fill={hoursColor(hours)} className={fallback.has(data.dates[index]) ? 'uptime-fallback' : undefined}>
                   <title>{`Camera ${camera.cameraId}, ${shortDate(data.dates[index])}: ${hours > 0 ? `${hours.toFixed(1)} h` : 'not imaging'}${fallback.has(data.dates[index]) ? ' (first to last frame; no usable power log)' : ''}`}</title>

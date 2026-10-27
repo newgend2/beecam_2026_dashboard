@@ -204,9 +204,9 @@ def main() -> int:
                      "daily": [round(h.get(d, 0), 2) for d in dates],
                      "fallbackDates": sorted(d.isoformat() for d in fallback[camera])}
                     for camera, h in sorted(per_camera.items())],
-        "source": ("Witty Pi power logs on every 2026 Emerald Queen SD card (" + ", ".join(f"{n} {k}" for k, n in cards.items())
-                   + " cards): a session runs from each logged boot to the first of the explicit shutdown, the scheduled "
-                   "shutdown or the next boot, and a card counts only from its first to its last saved image. "
+        "source": (f"Witty Pi power logs on all {sum(cards.values())} Emerald Queen SD cards from 2026: a session runs "
+                   "from each logged boot to the first of the explicit shutdown, the scheduled shutdown or the next boot, and a card "
+                   "counts only from its first to its last saved image. "
                    "Camera-days with saved frames but no usable log session count the span from first to last frame. "
                    "Cards lost with an SD card case (about July 9 to 23) could not be included."),
     }
