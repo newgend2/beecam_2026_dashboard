@@ -1878,6 +1878,150 @@ body.modal-open {
   background: #9fcbb5;
 }
 
+/* Rings of the frame */
+
+.ring-key {
+  display: grid;
+  grid-template-columns: minmax(200px, 320px) minmax(0, 1fr);
+  align-items: center;
+  gap: 28px;
+  margin: 0 0 28px;
+}
+
+.ring-key svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+}
+
+.ring-key svg text {
+  fill: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ring-key svg .ring-key-center {
+  font-size: 16px;
+}
+
+.ring-key svg .ring-key-distance {
+  fill: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ring-fill {
+  stroke: var(--paper);
+  stroke-width: 2;
+}
+
+.ring-fill--0,
+.ring-swatch--0 {
+  fill: #f2dca2;
+  background: #f2dca2;
+}
+
+.ring-fill--1,
+.ring-swatch--1 {
+  fill: #cfe5d8;
+  background: #cfe5d8;
+}
+
+.ring-fill--2,
+.ring-swatch--2 {
+  fill: #8fc3a9;
+  background: #8fc3a9;
+}
+
+.ring-key dl {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.ring-key dt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ring-key dd {
+  margin: 2px 0 0 20px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ring-key p {
+  margin: 14px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ring-swatch {
+  display: inline-block;
+  flex: none;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  border: 1px solid rgb(23 56 45 / 20%);
+  border-radius: 3px;
+  vertical-align: -1px;
+}
+
+.ring-key dt .ring-swatch {
+  margin-right: 0;
+}
+
+.ring-outline rect {
+  fill: none;
+  stroke: var(--ink);
+  stroke-dasharray: 5 4;
+  stroke-opacity: 0.55;
+  stroke-width: 1.2;
+  pointer-events: none;
+}
+
+.ring-outline-key {
+  display: inline-block;
+  width: 22px;
+  border-top: 2px dashed rgb(23 56 45 / 55%);
+}
+
+/* Trigger precision */
+
+.precision-rows .rate-row {
+  grid-template-columns: 150px minmax(80px, 1fr) 76px;
+}
+
+.site-dot {
+  display: inline-block;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  margin-right: 7px;
+  border-radius: 50%;
+}
+
+.site-dot--eq,
+.rate-dot--eq {
+  background: var(--green-dark);
+}
+
+.site-dot--clover,
+.rate-dot--clover {
+  background: var(--gold);
+}
+
+.precision-camera-note {
+  margin-top: 16px;
+}
+
 @media (max-width: 1050px) {
   .paired-grid {
     grid-template-columns: 1fr;
@@ -1886,8 +2030,13 @@ body.modal-open {
 
 @media (max-width: 700px) {
   .position-heat-pair,
-  .paired-grid--two {
+  .paired-grid--two,
+  .ring-key {
     grid-template-columns: 1fr;
+  }
+
+  .precision-rows .rate-row {
+    grid-template-columns: 118px minmax(60px, 1fr) 66px;
   }
 
   .chart-legend {

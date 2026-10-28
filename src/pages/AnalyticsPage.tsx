@@ -1,5 +1,6 @@
 import { CameraUptime } from '../components/CameraUptime'
 import { PositionAnalytics } from '../components/PositionAnalytics'
+import { TriggerPrecision } from '../components/TriggerPrecision'
 import { buildDailyCumulative, formatCameraLocation, locationSummaries, positiveSummary } from '../data/positives'
 
 const cumulative = buildDailyCumulative()
@@ -53,6 +54,8 @@ export function AnalyticsPage() {
       <CameraUptime />
 
       <PositionAnalytics />
+
+      <TriggerPrecision />
     </main>
   )
 }

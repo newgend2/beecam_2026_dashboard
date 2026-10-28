@@ -1,0 +1,241 @@
+{
+ "california": {
+  "label": "Emerald Queen, California",
+  "population": "Frames the cameras saved (int8 field model at 0.25 with the 7 s stale filter), random test cohorts v2 to v6",
+  "cohorts": [
+   "v2",
+   "v3",
+   "v4",
+   "v5",
+   "v6"
+  ],
+  "reviewedFrames": 6440,
+  "savedFramesRepresented": 423949,
+  "anyInsect": {
+   "value": 0.108,
+   "ci95": [
+    0.0991,
+    0.117
+   ]
+  },
+  "anyInsectUpper": {
+   "value": 0.123,
+   "ci95": [
+    0.114,
+    0.133
+   ]
+  },
+  "bombus": {
+   "value": 0.00105,
+   "ci95": [
+    0.00098,
+    0.00113
+   ]
+  },
+  "perCohort": [
+   {
+    "cohort": "v2",
+    "anyInsect": 0.101,
+    "n": 1374
+   },
+   {
+    "cohort": "v3",
+    "anyInsect": 0.0935,
+    "n": 1250
+   },
+   {
+    "cohort": "v4",
+    "anyInsect": 0.0745,
+    "n": 1034
+   },
+   {
+    "cohort": "v5",
+    "anyInsect": 0.11,
+    "n": 1361
+   },
+   {
+    "cohort": "v6",
+    "anyInsect": 0.158,
+    "n": 1421
+   }
+  ]
+ },
+ "clover": {
+  "label": "Clover cams, Oregon",
+  "candidates": 52199,
+  "draws": 820,
+  "triggers": 286,
+  "badImages": 1,
+  "allTriggers": {
+   "n": 285,
+   "anyInsect": {
+    "value": 0.421,
+    "ci95": [
+     0.365,
+     0.479
+    ],
+    "count": 120
+   },
+   "bombus": {
+    "value": 0.0316,
+    "ci95": [
+     0.0167,
+     0.0589
+    ],
+    "count": 9
+   },
+   "otherOnly": {
+    "value": 0.389,
+    "ci95": [
+     0.335,
+     0.447
+    ],
+    "count": 111
+   },
+   "noInsect": {
+    "value": 0.579,
+    "ci95": [
+     0.521,
+     0.635
+    ],
+    "count": 165
+   }
+  },
+  "saved": {
+   "n": 75,
+   "anyInsect": {
+    "value": 0.52,
+    "ci95": [
+     0.409,
+     0.629
+    ],
+    "count": 39
+   },
+   "bombus": {
+    "value": 0.04,
+    "ci95": [
+     0.0137,
+     0.111
+    ],
+    "count": 3
+   },
+   "otherOnly": {
+    "value": 0.48,
+    "ci95": [
+     0.371,
+     0.591
+    ],
+    "count": 36
+   },
+   "noInsect": {
+    "value": 0.48,
+    "ci95": [
+     0.371,
+     0.591
+    ],
+    "count": 36
+   }
+  },
+  "staleDropped": {
+   "n": 210,
+   "anyInsect": {
+    "value": 0.386,
+    "ci95": [
+     0.323,
+     0.453
+    ],
+    "count": 81
+   },
+   "bombus": {
+    "value": 0.0286,
+    "ci95": [
+     0.0132,
+     0.0609
+    ],
+    "count": 6
+   }
+  },
+  "boxLevel": {
+   "allTriggers": {
+    "value": 0.422,
+    "ci95": [
+     0.372,
+     0.473
+    ],
+    "boxes": 365,
+    "hits": 154
+   },
+   "saved": {
+    "value": 0.542,
+    "ci95": [
+     0.448,
+     0.633
+    ],
+    "boxes": 107,
+    "hits": 58
+   }
+  },
+  "perCamera": [
+   {
+    "camera": 1,
+    "triggers": 83,
+    "insect": 55,
+    "bombus": 8,
+    "saved": 35,
+    "savedInsect": 23,
+    "savedBombus": 2,
+    "insectShare": 0.6627,
+    "insectCi95": [
+     0.5558,
+     0.7552
+    ]
+   },
+   {
+    "camera": 4,
+    "triggers": 24,
+    "insect": 17,
+    "bombus": 1,
+    "saved": 14,
+    "savedInsect": 9,
+    "savedBombus": 1,
+    "insectShare": 0.7083,
+    "insectCi95": [
+     0.5083,
+     0.8509
+    ]
+   },
+   {
+    "camera": 11,
+    "triggers": 35,
+    "insect": 10,
+    "bombus": 0,
+    "saved": 8,
+    "savedInsect": 3,
+    "savedBombus": 0,
+    "insectShare": 0.2857,
+    "insectCi95": [
+     0.1633,
+     0.4505
+    ]
+   },
+   {
+    "camera": 23,
+    "triggers": 144,
+    "insect": 38,
+    "bombus": 0,
+    "saved": 18,
+    "savedInsect": 4,
+    "savedBombus": 0,
+    "insectShare": 0.2639,
+    "insectCi95": [
+     0.1987,
+     0.3413
+    ]
+   }
+  ]
+ },
+ "methods": {
+  "california": "Horvitz-Thompson weights by the inverse inclusion probability of each frame's score stratum; 95% intervals from a stratified bootstrap (2,000 resamples within cohort and stratum). Cohort v1 is left out because its middle-score group was reviewed for Bombus only. The upper value also counts frames reviewed as empty where the cascade's insect detector scored 0.5 or more.",
+  "clover": "an equal-probability random draw of 820 of the 52,199 timelapse frames where the full-precision field model scores 0.25 or more, kept where the deployed int8 model fires at 0.25 (286 frames). Saved frames replay the camera's 7 s stale filter from int8 detections on up to 15 preceding frames. 95% Wilson intervals. Per-camera trigger counts include the one unusable frame."
+ }
+}

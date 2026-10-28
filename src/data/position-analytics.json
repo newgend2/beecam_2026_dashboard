@@ -15,7 +15,11 @@
   "ringLabels": [
    "Outer ring",
    "Middle ring",
-   "Centre"
+   "Center"
+  ],
+  "ringLimits": [
+   0.1,
+   0.25
   ],
   "edgeMargin": 0.05,
   "frameWidth": 4056,
@@ -123,7 +127,7 @@
   ],
   "thirds": {
    "left": 0.3977,
-   "centre": 0.2694,
+   "center": 0.2694,
    "right": 0.333,
    "top": 0.4184,
    "middle": 0.2789,
@@ -209,7 +213,7 @@
    ],
    "thirds": {
     "left": 0.4094,
-    "centre": 0.2513,
+    "center": 0.2513,
     "right": 0.3393,
     "top": 0.4331,
     "middle": 0.2527,
@@ -224,7 +228,7 @@
    "meanRadial": 0.5786
   },
   "headline": {
-   "centreShare": {
+   "centerShare": {
     "value": 0.1665,
     "ci95": [
      0.1509,
@@ -2332,7 +2336,7 @@
   ],
   "thirds": {
    "left": 0.5819,
-   "centre": 0.1638,
+   "center": 0.1638,
    "right": 0.2543,
    "top": 0.4027,
    "middle": 0.1469,
@@ -2418,7 +2422,7 @@
    ],
    "thirds": {
     "left": 0.5776,
-    "centre": 0.1552,
+    "center": 0.1552,
     "right": 0.2672,
     "top": 0.3966,
     "middle": 0.1466,
@@ -2433,7 +2437,7 @@
    "meanRadial": 0.7267
   },
   "headline": {
-   "centreShare": {
+   "centerShare": {
     "value": 0.0518,
     "ci95": [
      0.0187,
@@ -2831,7 +2835,7 @@
      ]
     },
     {
-     "label": "Centre",
+     "label": "Center",
      "visits": 6,
      "caught": 6,
      "saved": 6,
@@ -3049,7 +3053,7 @@
       0.953
      ],
      "caughtWeighted": 0.8613,
-     "label": "Centre"
+     "label": "Center"
     }
    ],
    "size": [
@@ -3192,6 +3196,6 @@
  },
  "sources": {
   "emeraldQueen": "Human-confirmed Bombus boxes from the bombus_cascade live manifest (scripts/export_cascade_positives.py), test images excluded.",
-  "clover": "Human Bombus boxes of the reviewed clover timelapse cohort timelapse_eval_2026_r1 (bombus_cascade scripts/export_clover_box_positions.py); trigger = int8 field model at score 0.25, box matched by IoU >= 0.3 or centre inside the box."
+  "clover": "Human Bombus boxes of the reviewed clover timelapse cohort timelapse_eval_2026_r1 (bombus_cascade scripts/export_clover_box_positions.py); trigger = int8 field model at score 0.25, box matched by IoU >= 0.3 or center inside the box."
  }
 }

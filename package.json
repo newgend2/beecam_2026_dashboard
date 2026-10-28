@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "refresh:positives": "python3 scripts/build_positive_assets.py",
-    "validate:data": "node scripts/validate-camera-data.mjs && node scripts/validate-positive-data.mjs && node scripts/validate-clover-data.mjs && node scripts/validate-position-data.mjs && node scripts/validate-uptime-data.mjs",
+    "validate:data": "node scripts/validate-camera-data.mjs && node scripts/validate-positive-data.mjs && node scripts/validate-clover-data.mjs && node scripts/validate-position-data.mjs && node scripts/validate-uptime-data.mjs && node scripts/validate-precision-data.mjs",
     "refresh:clover": "python3 scripts/build_clover_assets.py",
     "score:sharpness": "python3 scripts/score_sharpness.py",
     "test": "vitest run",
