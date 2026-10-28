@@ -129,7 +129,18 @@ python3 scripts/build_position_analytics.py
 Emerald Queen boxes come from the private positives manifest, with each visit weighted once. Clover
 boxes and the trigger test come from the reviewed timelapse cohort (int8 field model at 0.25, the
 camera's stale filter replayed), with visits by the same 5 s rule. `scripts/validate-position-data.mjs` checks the
-totals against positive-data.json, clover-data.json and model-stats.json.
+totals against positive-data.json, clover-data.json and model-stats.json. The ring boundaries (`RINGS` in the
+builder, published as `grid.ringLimits`) drive both the ring diagram and the dashed outlines on the heat maps.
+
+## Trigger precision (Analytics tab)
+
+`src/data/trigger-precision.json` compares the share of trigger-saved frames that hold any insect, and a Bombus,
+at Emerald Queen and at the clover site. The Emerald Queen figures are weighted estimates from the random test
+cohorts v2–v6 (v1 was reviewed for Bombus only; `bombus_cascade` scripts/analyze_eq_saved_frame_insects.py, results in
+runs/eq_saved_frame_insects/results.json on slugger). The clover figures come from a random review of 286 int8
+trigger frames (scripts/build_trigger_precision_plan.py and scripts/analyze_trigger_precision.py, results under
+runs/timelapse_eval_2026/review_plan/tp_trigger/). The file is written by hand from
+those results. `scripts/validate-precision-data.mjs` checks that the counts and intervals agree.
 
 ## Changing the visit rule
 

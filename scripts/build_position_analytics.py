@@ -38,7 +38,7 @@ OUTPUT = ROOT / "src" / "data" / "position-analytics.json"
 COLS, ROWS = 8, 6          # heat-map grid on the 4:3 frame
 BINS = 10                  # marginal histograms
 EDGE = 0.05                # a box within 5% of the frame border counts as at the edge
-RINGS = [(0.1, "Outer ring"), (0.25, "Middle ring"), (0.51, "Centre")]  # by the box centre's distance to the nearest border
+RINGS = [(0.1, "Outer ring"), (0.25, "Middle ring"), (0.51, "Center")]  # by the box center's distance to the nearest border
 RADIAL_BINS = 8
 SIZE_BINS = [0, 0.0025, 0.005, 0.01, 0.02, 0.04, 1.0]  # box area as a share of the frame
 SIZE_LABELS = ["<0.25%", "0.25–0.5%", "0.5–1%", "1–2%", "2–4%", "≥4%"]
@@ -55,7 +55,7 @@ def ring(b: dict) -> int:
 
 
 def radial(b: dict) -> float:
-    """Distance of the box centre from the frame centre, 0 at the centre and 1 at a corner (pixel geometry)."""
+    """Distance of the box center from the frame center, 0 at the center and 1 at a corner (pixel geometry)."""
     dx, dy = (b["x"] - 0.5) * 4056, (b["y"] - 0.5) * 3040
     return min(1.0, (dx * dx + dy * dy) ** 0.5 / (0.5 * (4056 ** 2 + 3040 ** 2) ** 0.5))
 
@@ -68,9 +68,9 @@ def wilson(k: int, n: int) -> list[float] | None:
     if not n:
         return None
     z, p = 1.96, k / n
-    centre = (p + z * z / (2 * n)) / (1 + z * z / n)
+    center = (p + z * z / (2 * n)) / (1 + z * z / n)
     half = z * ((p * (1 - p) + z * z / (4 * n)) / n) ** 0.5 / (1 + z * z / n)
-    return [max(0.0, centre - half), min(1.0, centre + half)]
+    return [max(0.0, center - half), min(1.0, center + half)]
 
 
 def size_bin(area: float) -> int:
@@ -130,8 +130,8 @@ def stats(boxes: list[dict]) -> dict:
     total = sum(b["weight"] for b in boxes) or 1.0
     heat = [[0.0] * COLS for _ in range(ROWS)]
     xs, ys, sizes = [0.0] * BINS, [0.0] * BINS, [0.0] * (len(SIZE_BINS) - 1)
-    thirds = {"left": 0.0, "centre": 0.0, "right": 0.0, "top": 0.0, "middle": 0.0, "bottom": 0.0}
-    centre = edge = 0.0
+    thirds = {"left": 0.0, "center": 0.0, "right": 0.0, "top": 0.0, "middle": 0.0, "bottom": 0.0}
+    center = edge = 0.0
     rings, radials = [0.0] * len(RINGS), [0.0] * RADIAL_BINS
     for b in boxes:
         w = b["weight"] / total
@@ -139,9 +139,9 @@ def stats(boxes: list[dict]) -> dict:
         xs[min(BINS - 1, int(b["x"] * BINS))] += w
         ys[min(BINS - 1, int(b["y"] * BINS))] += w
         sizes[size_bin(b["w"] * b["h"])] += w
-        thirds[("left", "centre", "right")[region3(b["x"])]] += w
+        thirds[("left", "center", "right")[region3(b["x"])]] += w
         thirds[("top", "middle", "bottom")[region3(b["y"])]] += w
-        centre += w * (0.25 <= b["x"] < 0.75 and 0.25 <= b["y"] < 0.75)
+        center += w * (0.25 <= b["x"] < 0.75 and 0.25 <= b["y"] < 0.75)
         edge += w * at_edge(b)
         rings[ring(b)] += w
         radials[min(RADIAL_BINS - 1, int(radial(b) * RADIAL_BINS))] += w
@@ -152,7 +152,7 @@ def stats(boxes: list[dict]) -> dict:
         if acc >= total / 2:
             median = area
             break
-    return {"heat": heat, "x": xs, "y": ys, "size": sizes, "thirds": thirds, "centreShare": centre,
+    return {"heat": heat, "x": xs, "y": ys, "size": sizes, "thirds": thirds, "centerShare": center,
             "edgeShare": edge, "rings": rings, "radial": radials, "meanRadial": sum(radial(b) * b["weight"] for b in boxes) / total, "meanX": sum(b["x"] * b["weight"] for b in boxes) / total,
             "meanY": sum(b["y"] * b["weight"] for b in boxes) / total, "medianArea": median}
 
@@ -175,7 +175,7 @@ def headline(boxes: list[dict], seed: int) -> dict:
     s = stats(boxes)
     out = {}
     for key, fn in {
-        "centreShare": lambda b: stats(b)["centreShare"],
+        "centerShare": lambda b: stats(b)["centerShare"],
         "edgeShare": lambda b: stats(b)["edgeShare"],
         "meanRadial": lambda b: stats(b)["meanRadial"],
         "meanX": lambda b: stats(b)["meanX"],
@@ -260,7 +260,7 @@ def main() -> int:
     eq_arrive, clover_arrive = stats(arrivals(eq)), stats(arrivals(clover))
     data = {
         "grid": {"cols": COLS, "rows": ROWS, "bins": BINS, "radialBins": RADIAL_BINS, "sizeLabels": SIZE_LABELS,
-                 "ringLabels": [label for _, label in RINGS], "edgeMargin": EDGE, "frameWidth": 4056, "frameHeight": 3040},
+                 "ringLabels": [label for _, label in RINGS], "ringLimits": [limit for limit, _ in RINGS[:-1]], "edgeMargin": EDGE, "frameWidth": 4056, "frameHeight": 3040},
         "emeraldQueen": {
             "boxes": len(eq), "visits": len({b["group"] for b in eq}), "cameras": len({b["camera"] for b in eq}),
             "capture": "Saved only when the camera's on-board insect model triggered",
@@ -283,7 +283,7 @@ def main() -> int:
         },
         "sources": {
             "emeraldQueen": "Human-confirmed Bombus boxes from the bombus_cascade live manifest (scripts/export_cascade_positives.py), test images excluded.",
-            "clover": "Human Bombus boxes of the reviewed clover timelapse cohort timelapse_eval_2026_r1 (bombus_cascade scripts/export_clover_box_positions.py); trigger = int8 field model at score 0.25, box matched by IoU >= 0.3 or centre inside the box.",
+            "clover": "Human Bombus boxes of the reviewed clover timelapse cohort timelapse_eval_2026_r1 (bombus_cascade scripts/export_clover_box_positions.py); trigger = int8 field model at score 0.25, box matched by IoU >= 0.3 or center inside the box.",
         },
     }
     OUTPUT.write_text(json.dumps(rounded(data), indent=1) + "\n", encoding="utf-8")
