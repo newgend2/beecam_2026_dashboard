@@ -38,16 +38,7 @@
       "tp": 119,
       "fp": 5,
       "fn": 8
-    },
-    {
-      "label": "Round 5 cascade",
-      "kind": "held-out",
-      "data": "Test cohort v6, same frames, for comparison",
-      "images": 1421,
-      "tp": 120,
-      "fp": 14,
-      "fn": 7
     }
   ],
-  "resultsSource": "bombus_cascade docs/STATE.md and docs/R6_ERRORS_TEST_V6.md. Round 6 is configs/pipelines/r6_20261015.json (the det_r4 detector with the r6_colour_cam and r6_blur classifiers at threshold 0.7157). Development is the 4,141-image development split used to select it. Held-out is test cohort test_eq2026_archive_v6 (1,421 reviewed frames from 25 unseen camera-days), scored once with the frozen pipeline (round 6 118 / 6 / 9, round 5 121 / 13 / 6). The rows show the scores after a review of the error frames corrected a few labels, which retired the cohort; round 6 then found 73 of the 77 positive events."
+  "resultsSource": "bombus_cascade docs/STATE.md and docs/R6_ERRORS_TEST_V6.md. Round 6 is configs/pipelines/r6_20261015.json (the det_r4 detector with the r6_colour_cam and r6_blur classifiers at threshold 0.7157). Development is the 4,141-image development split used to select it. Held-out is test cohort test_eq2026_archive_v6 (1,421 reviewed frames from 25 unseen camera-days), scored once with the frozen pipeline (118 / 6 / 9 before the label corrections). The rows show the scores after a review of the error frames corrected a few labels, which retired the cohort; round 6 then found 73 of the 77 positive events."
 }
