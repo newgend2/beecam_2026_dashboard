@@ -1,73 +1,469 @@
 {
-  "pipeline": "r4_20261009",
-  "pipeline_sha256": "f2def35a12eb7b18abb2cf5bcd4804245246b65b50530e0cd2039cba190a2a56",
-  "device": "cpu (detector half=False)",
-  "frames": 1220,
+  "pipeline": "r6_20261015",
+  "pipeline_sha256": "53eb60032d66fa5575c1c94536e22e4fbc0dca5354551e4c55c04c9a22ca367c",
+  "scores": "cached frozen evaluation run archive_v6_corrected_r6_20261015",
+  "frames": 1365,
   "fps": 24,
+  "threshold": 0.715731,
   "images": [
     {
-      "camera": "cam1",
-      "date": "2026-06-01",
-      "split": "train",
+      "camera": "cam3",
+      "date": "2026-06-29",
+      "split": "final_test",
       "truth": "bombus",
       "decision": "bombus",
-      "p_bombus": 0.995923
+      "combined": 0.999878,
+      "note": null,
+      "members": [
+        {
+          "member": "r6_blur",
+          "view": "0\u00b0",
+          "p": 0.999416
+        },
+        {
+          "member": "r6_blur",
+          "view": "90\u00b0",
+          "p": 0.999845
+        },
+        {
+          "member": "r6_blur",
+          "view": "180\u00b0",
+          "p": 0.999962
+        },
+        {
+          "member": "r6_blur",
+          "view": "270\u00b0",
+          "p": 0.999932
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "0\u00b0",
+          "p": 0.999998
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "90\u00b0",
+          "p": 0.999984
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "180\u00b0",
+          "p": 0.999946
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "270\u00b0",
+          "p": 0.999944
+        }
+      ]
     },
     {
-      "camera": "cam3",
-      "date": "2026-05-22",
-      "split": "train",
-      "truth": "other_insect",
-      "decision": "other_insect",
-      "p_bombus": 0.000111
+      "camera": "cam15",
+      "date": "2026-07-03",
+      "split": "final_test",
+      "truth": "bombus",
+      "decision": "bombus",
+      "combined": 0.999977,
+      "note": null,
+      "members": [
+        {
+          "member": "r6_blur",
+          "view": "0\u00b0",
+          "p": 0.999954
+        },
+        {
+          "member": "r6_blur",
+          "view": "90\u00b0",
+          "p": 0.999995
+        },
+        {
+          "member": "r6_blur",
+          "view": "180\u00b0",
+          "p": 0.999998
+        },
+        {
+          "member": "r6_blur",
+          "view": "270\u00b0",
+          "p": 0.999978
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "0\u00b0",
+          "p": 0.999979
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "90\u00b0",
+          "p": 1.0
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "180\u00b0",
+          "p": 0.999921
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "270\u00b0",
+          "p": 0.999995
+        }
+      ]
+    },
+    {
+      "camera": "cam20",
+      "date": "2026-06-27",
+      "split": "final_test",
+      "truth": "bombus",
+      "decision": "bombus",
+      "combined": 0.999946,
+      "note": null,
+      "members": [
+        {
+          "member": "r6_blur",
+          "view": "0\u00b0",
+          "p": 0.99992
+        },
+        {
+          "member": "r6_blur",
+          "view": "90\u00b0",
+          "p": 0.999972
+        },
+        {
+          "member": "r6_blur",
+          "view": "180\u00b0",
+          "p": 0.9997
+        },
+        {
+          "member": "r6_blur",
+          "view": "270\u00b0",
+          "p": 0.999978
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "0\u00b0",
+          "p": 1.0
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "90\u00b0",
+          "p": 0.999997
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "180\u00b0",
+          "p": 1.0
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "270\u00b0",
+          "p": 1.0
+        }
+      ]
+    },
+    {
+      "camera": "cam1",
+      "date": "2026-06-26",
+      "split": "final_test",
+      "truth": "bombus",
+      "decision": "bombus",
+      "combined": 0.999535,
+      "note": null,
+      "members": [
+        {
+          "member": "r6_blur",
+          "view": "0\u00b0",
+          "p": 0.999975
+        },
+        {
+          "member": "r6_blur",
+          "view": "90\u00b0",
+          "p": 0.998174
+        },
+        {
+          "member": "r6_blur",
+          "view": "180\u00b0",
+          "p": 0.999942
+        },
+        {
+          "member": "r6_blur",
+          "view": "270\u00b0",
+          "p": 0.999216
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "0\u00b0",
+          "p": 0.999995
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "90\u00b0",
+          "p": 0.999539
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "180\u00b0",
+          "p": 0.999592
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "270\u00b0",
+          "p": 0.999844
+        }
+      ]
     },
     {
       "camera": "cam26",
-      "date": "2026-06-17",
-      "split": "train",
-      "truth": "bombus",
-      "decision": "bombus",
-      "p_bombus": 0.998196
-    },
-    {
-      "camera": "cam4",
-      "date": "2026-05-20",
-      "split": "train",
+      "date": "2026-06-20",
+      "split": "final_test",
       "truth": "other_insect",
       "decision": "other_insect",
-      "p_bombus": 3.6e-05
+      "combined": 0.0,
+      "note": null,
+      "members": [
+        {
+          "member": "r6_blur",
+          "view": "0\u00b0",
+          "p": 1e-06
+        },
+        {
+          "member": "r6_blur",
+          "view": "90\u00b0",
+          "p": 0.0
+        },
+        {
+          "member": "r6_blur",
+          "view": "180\u00b0",
+          "p": 2e-06
+        },
+        {
+          "member": "r6_blur",
+          "view": "270\u00b0",
+          "p": 0.0
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "0\u00b0",
+          "p": 0.0
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "90\u00b0",
+          "p": 1e-06
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "180\u00b0",
+          "p": 0.0
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "270\u00b0",
+          "p": 0.0
+        }
+      ]
     },
     {
-      "camera": "cam4",
-      "date": "2026-06-26",
-      "split": "train",
-      "truth": "bombus",
-      "decision": "bombus",
-      "p_bombus": 0.999792
-    },
-    {
-      "camera": "cam1",
-      "date": "2026-05-23",
-      "split": "train",
+      "camera": "cam27",
+      "date": "2026-06-25",
+      "split": "final_test",
       "truth": "other_insect",
       "decision": "other_insect",
-      "p_bombus": 0.001811
+      "combined": 0.005647,
+      "note": null,
+      "members": [
+        {
+          "member": "r6_blur",
+          "view": "0\u00b0",
+          "p": 0.000743
+        },
+        {
+          "member": "r6_blur",
+          "view": "90\u00b0",
+          "p": 0.003609
+        },
+        {
+          "member": "r6_blur",
+          "view": "180\u00b0",
+          "p": 0.004274
+        },
+        {
+          "member": "r6_blur",
+          "view": "270\u00b0",
+          "p": 0.000688
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "0\u00b0",
+          "p": 9e-06
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "90\u00b0",
+          "p": 1.9e-05
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "180\u00b0",
+          "p": 2.2e-05
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "270\u00b0",
+          "p": 0.035809
+        }
+      ]
     },
     {
-      "camera": "cam2",
-      "date": "2026-05-22",
-      "split": "train",
-      "truth": "bombus",
-      "decision": "bombus",
-      "p_bombus": 0.999484
-    },
-    {
-      "camera": "cam2",
-      "date": "2026-06-01",
-      "split": "train",
+      "camera": "cam5",
+      "date": "2026-07-12",
+      "split": "final_test",
       "truth": "other_insect",
       "decision": "other_insect",
-      "p_bombus": 0.00104
+      "combined": 8e-06,
+      "note": null,
+      "members": [
+        {
+          "member": "r6_blur",
+          "view": "0\u00b0",
+          "p": 6e-06
+        },
+        {
+          "member": "r6_blur",
+          "view": "90\u00b0",
+          "p": 0.0
+        },
+        {
+          "member": "r6_blur",
+          "view": "180\u00b0",
+          "p": 3e-06
+        },
+        {
+          "member": "r6_blur",
+          "view": "270\u00b0",
+          "p": 0.0
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "0\u00b0",
+          "p": 1e-06
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "90\u00b0",
+          "p": 3e-06
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "180\u00b0",
+          "p": 1.2e-05
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "270\u00b0",
+          "p": 3.8e-05
+        }
+      ]
+    },
+    {
+      "camera": "cam22",
+      "date": "2026-06-15",
+      "split": "final_test",
+      "truth": "other_insect",
+      "decision": "other_insect",
+      "combined": 0.000164,
+      "note": null,
+      "members": [
+        {
+          "member": "r6_blur",
+          "view": "0\u00b0",
+          "p": 8.5e-05
+        },
+        {
+          "member": "r6_blur",
+          "view": "90\u00b0",
+          "p": 0.000822
+        },
+        {
+          "member": "r6_blur",
+          "view": "180\u00b0",
+          "p": 0.00015
+        },
+        {
+          "member": "r6_blur",
+          "view": "270\u00b0",
+          "p": 3.8e-05
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "0\u00b0",
+          "p": 2e-05
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "90\u00b0",
+          "p": 5e-06
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "180\u00b0",
+          "p": 6.8e-05
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "270\u00b0",
+          "p": 0.000127
+        }
+      ]
+    },
+    {
+      "camera": "cam20",
+      "date": "2026-06-27",
+      "split": "final_test",
+      "truth": "bombus",
+      "decision": "bombus",
+      "combined": 0.717325,
+      "note": "closest call among the correct frames",
+      "members": [
+        {
+          "member": "r6_blur",
+          "view": "0\u00b0",
+          "p": 0.894036
+        },
+        {
+          "member": "r6_blur",
+          "view": "90\u00b0",
+          "p": 0.360424
+        },
+        {
+          "member": "r6_blur",
+          "view": "180\u00b0",
+          "p": 0.874452
+        },
+        {
+          "member": "r6_blur",
+          "view": "270\u00b0",
+          "p": 0.688686
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "0\u00b0",
+          "p": 0.651266
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "90\u00b0",
+          "p": 0.684534
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "180\u00b0",
+          "p": 0.688626
+        },
+        {
+          "member": "r6_colour_cam",
+          "view": "270\u00b0",
+          "p": 0.896574
+        }
+      ]
     }
   ]
 }

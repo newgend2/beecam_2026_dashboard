@@ -55,14 +55,20 @@ Archive-cohort frames carry whole-second timestamps, so frames that share a seco
 ## Model demo video
 
 `public/model/cascade_demo.mp4` is rendered by `scripts/build_cascade_demo.py` from the
-frozen `bombus_cascade` pipeline named in that script, on CPU so it never competes with GPU
-training. The frames are listed in `scripts/cascade_demo_ids.txt`. Run it with the cascade
-project's interpreter:
+frozen `bombus_cascade` pipeline named in that script (round 6). The frames are listed in
+`scripts/cascade_demo_ids.txt`. Run it with the cascade project's interpreter; rendering is on the CPU:
 
 ```bash
-CUDA_VISIBLE_DEVICES= ~/Desktop/beecam_2026/bombus_cascade/.venv/bin/python \
-  scripts/build_cascade_demo.py --ids scripts/cascade_demo_ids.txt
+cd ~/Desktop/beecam_2026/bombus_cascade && .venv/bin/python ../data_dashboard/scripts/build_cascade_demo.py \
+  --ids ../data_dashboard/scripts/cascade_demo_ids.txt --from-run runs/test/archive_v6_corrected_r6_20261015
+.venv/bin/python ../data_dashboard/scripts/build_cascade_stages.py
 ```
+
+The demo shows round 6 (`r6_20261015`) on held-out test cohort v6 frames the cascade got right, drawn at random
+(seed 20261028), plus the closest correct call. `--from-run` takes every proposal and member x view score from the
+frozen evaluation run, so the video matches the reported metrics; without it the cascade reruns on the CPU.
+`build_cascade_stages.py` writes `src/data/cascade-stages.json`: the detector alone, each ensemble member alone
+and the ensemble, on development and test v6, plus the demo examples.
 
 The model tab's other figures live in `src/data/model-stats.json`, each with its source.
 The frames-recorded total there (also on the Overview) is an exact count of the transferred

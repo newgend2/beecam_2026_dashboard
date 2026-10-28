@@ -1,0 +1,674 @@
+{
+ "pipeline": "r6_20261015",
+ "threshold": 0.7157,
+ "detector": {
+  "weights": "det_r4 (YOLO, one class: insect)",
+  "imgsz": 1920,
+  "proposalFloor": 0.01,
+  "nmsIou": 0.6,
+  "rawConf": 0.001
+ },
+ "members": [
+  {
+   "id": "r6_blur",
+   "label": "blur",
+   "architecture": "ResNet-50 (ImageNet start)",
+   "inputSize": 320,
+   "trainingNote": "Blur augmentation: motion blur or defocus with low light on half the training crops, plus color jitter.",
+   "views": [
+    "0°",
+    "90°",
+    "180°",
+    "270°"
+   ]
+  },
+  {
+   "id": "r6_colour_cam",
+   "label": "color, camera-balanced",
+   "architecture": "ResNet-50 (ImageNet start)",
+   "inputSize": 320,
+   "trainingNote": "Color and white-balance jitter, with camera-balanced sampling so no camera dominates training.",
+   "views": [
+    "0°",
+    "90°",
+    "180°",
+    "270°"
+   ]
+  }
+ ],
+ "combine": "Equal mean of the softmax Bombus probabilities of every member at every view (2 members x 4 quarter-turn views = 8 scores); a proposal is Bombus when the mean reaches the threshold, then overlapping Bombus boxes are merged (NMS IoU 0.3).",
+ "matchRule": "One-to-one match at IoU >= 0.3 against human boxes; TP/FP/FN count boxes, as in the results table.",
+ "detectorMetrics": [
+  {
+   "data": "Development (4,141 images)",
+   "kind": "development",
+   "images": 4141,
+   "matchIou": 0.3,
+   "conf": 0.01,
+   "insect": {
+    "tp": 1361,
+    "fp": 4823,
+    "fn": 11
+   },
+   "bombusRecall": {
+    "covered": 821,
+    "boxes": 823
+   }
+  },
+  {
+   "data": "Development (4,141 images)",
+   "kind": "development",
+   "images": 4141,
+   "matchIou": 0.3,
+   "conf": 0.25,
+   "insect": {
+    "tp": 1323,
+    "fp": 977,
+    "fn": 49
+   },
+   "bombusRecall": {
+    "covered": 808,
+    "boxes": 823
+   }
+  },
+  {
+   "data": "Held-out test v6 (1,421 images)",
+   "kind": "held-out",
+   "images": 1421,
+   "matchIou": 0.3,
+   "conf": 0.01,
+   "insect": {
+    "tp": 529,
+    "fp": 1204,
+    "fn": 7
+   },
+   "bombusRecall": {
+    "covered": 127,
+    "boxes": 127
+   }
+  },
+  {
+   "data": "Held-out test v6 (1,421 images)",
+   "kind": "held-out",
+   "images": 1421,
+   "matchIou": 0.3,
+   "conf": 0.25,
+   "insect": {
+    "tp": 477,
+    "fp": 190,
+    "fn": 59
+   },
+   "bombusRecall": {
+    "covered": 126,
+    "boxes": 127
+   }
+  }
+ ],
+ "memberMetrics": [
+  {
+   "member": "r6_blur",
+   "data": "Development (4,141 images)",
+   "kind": "development",
+   "images": 4141,
+   "threshold": 0.7157,
+   "tp": 799,
+   "fp": 30,
+   "fn": 24
+  },
+  {
+   "member": "r6_blur",
+   "data": "Development (4,141 images)",
+   "kind": "development",
+   "images": 4141,
+   "threshold": 0.7344,
+   "thresholdNote": "member's own threshold, chosen on development",
+   "tp": 796,
+   "fp": 26,
+   "fn": 27
+  },
+  {
+   "member": "r6_blur",
+   "data": "Held-out test v6 (1,421 images)",
+   "kind": "held-out",
+   "images": 1421,
+   "threshold": 0.7157,
+   "tp": 117,
+   "fp": 8,
+   "fn": 10
+  },
+  {
+   "member": "r6_blur",
+   "data": "Held-out test v6 (1,421 images)",
+   "kind": "held-out",
+   "images": 1421,
+   "threshold": 0.7344,
+   "thresholdNote": "member's own threshold, chosen on development",
+   "tp": 115,
+   "fp": 7,
+   "fn": 12
+  },
+  {
+   "member": "r6_colour_cam",
+   "data": "Development (4,141 images)",
+   "kind": "development",
+   "images": 4141,
+   "threshold": 0.7157,
+   "tp": 798,
+   "fp": 24,
+   "fn": 25
+  },
+  {
+   "member": "r6_colour_cam",
+   "data": "Development (4,141 images)",
+   "kind": "development",
+   "images": 4141,
+   "threshold": 0.7036,
+   "thresholdNote": "member's own threshold, chosen on development",
+   "tp": 799,
+   "fp": 24,
+   "fn": 24
+  },
+  {
+   "member": "r6_colour_cam",
+   "data": "Held-out test v6 (1,421 images)",
+   "kind": "held-out",
+   "images": 1421,
+   "threshold": 0.7157,
+   "tp": 121,
+   "fp": 8,
+   "fn": 6
+  },
+  {
+   "member": "r6_colour_cam",
+   "data": "Held-out test v6 (1,421 images)",
+   "kind": "held-out",
+   "images": 1421,
+   "threshold": 0.7036,
+   "thresholdNote": "member's own threshold, chosen on development",
+   "tp": 121,
+   "fp": 10,
+   "fn": 6
+  },
+  {
+   "member": "ensemble",
+   "data": "Development (4,141 images)",
+   "kind": "development",
+   "images": 4141,
+   "threshold": 0.7157,
+   "tp": 802,
+   "fp": 19,
+   "fn": 21
+  },
+  {
+   "member": "ensemble",
+   "data": "Held-out test v6 (1,421 images)",
+   "kind": "held-out",
+   "images": 1421,
+   "threshold": 0.7157,
+   "tp": 119,
+   "fp": 5,
+   "fn": 8
+  }
+ ],
+ "examples": [
+  {
+   "camera": "cam3",
+   "date": "2026-06-29",
+   "split": "final_test",
+   "truth": "bombus",
+   "decision": "bombus",
+   "combined": 0.999878,
+   "note": null,
+   "members": [
+    {
+     "member": "r6_blur",
+     "view": "0°",
+     "p": 0.999416
+    },
+    {
+     "member": "r6_blur",
+     "view": "90°",
+     "p": 0.999845
+    },
+    {
+     "member": "r6_blur",
+     "view": "180°",
+     "p": 0.999962
+    },
+    {
+     "member": "r6_blur",
+     "view": "270°",
+     "p": 0.999932
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "0°",
+     "p": 0.999998
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "90°",
+     "p": 0.999984
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "180°",
+     "p": 0.999946
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "270°",
+     "p": 0.999944
+    }
+   ]
+  },
+  {
+   "camera": "cam15",
+   "date": "2026-07-03",
+   "split": "final_test",
+   "truth": "bombus",
+   "decision": "bombus",
+   "combined": 0.999977,
+   "note": null,
+   "members": [
+    {
+     "member": "r6_blur",
+     "view": "0°",
+     "p": 0.999954
+    },
+    {
+     "member": "r6_blur",
+     "view": "90°",
+     "p": 0.999995
+    },
+    {
+     "member": "r6_blur",
+     "view": "180°",
+     "p": 0.999998
+    },
+    {
+     "member": "r6_blur",
+     "view": "270°",
+     "p": 0.999978
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "0°",
+     "p": 0.999979
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "90°",
+     "p": 1.0
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "180°",
+     "p": 0.999921
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "270°",
+     "p": 0.999995
+    }
+   ]
+  },
+  {
+   "camera": "cam20",
+   "date": "2026-06-27",
+   "split": "final_test",
+   "truth": "bombus",
+   "decision": "bombus",
+   "combined": 0.999946,
+   "note": null,
+   "members": [
+    {
+     "member": "r6_blur",
+     "view": "0°",
+     "p": 0.99992
+    },
+    {
+     "member": "r6_blur",
+     "view": "90°",
+     "p": 0.999972
+    },
+    {
+     "member": "r6_blur",
+     "view": "180°",
+     "p": 0.9997
+    },
+    {
+     "member": "r6_blur",
+     "view": "270°",
+     "p": 0.999978
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "0°",
+     "p": 1.0
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "90°",
+     "p": 0.999997
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "180°",
+     "p": 1.0
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "270°",
+     "p": 1.0
+    }
+   ]
+  },
+  {
+   "camera": "cam1",
+   "date": "2026-06-26",
+   "split": "final_test",
+   "truth": "bombus",
+   "decision": "bombus",
+   "combined": 0.999535,
+   "note": null,
+   "members": [
+    {
+     "member": "r6_blur",
+     "view": "0°",
+     "p": 0.999975
+    },
+    {
+     "member": "r6_blur",
+     "view": "90°",
+     "p": 0.998174
+    },
+    {
+     "member": "r6_blur",
+     "view": "180°",
+     "p": 0.999942
+    },
+    {
+     "member": "r6_blur",
+     "view": "270°",
+     "p": 0.999216
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "0°",
+     "p": 0.999995
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "90°",
+     "p": 0.999539
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "180°",
+     "p": 0.999592
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "270°",
+     "p": 0.999844
+    }
+   ]
+  },
+  {
+   "camera": "cam26",
+   "date": "2026-06-20",
+   "split": "final_test",
+   "truth": "other_insect",
+   "decision": "other_insect",
+   "combined": 0.0,
+   "note": null,
+   "members": [
+    {
+     "member": "r6_blur",
+     "view": "0°",
+     "p": 1e-06
+    },
+    {
+     "member": "r6_blur",
+     "view": "90°",
+     "p": 0.0
+    },
+    {
+     "member": "r6_blur",
+     "view": "180°",
+     "p": 2e-06
+    },
+    {
+     "member": "r6_blur",
+     "view": "270°",
+     "p": 0.0
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "0°",
+     "p": 0.0
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "90°",
+     "p": 1e-06
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "180°",
+     "p": 0.0
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "270°",
+     "p": 0.0
+    }
+   ]
+  },
+  {
+   "camera": "cam27",
+   "date": "2026-06-25",
+   "split": "final_test",
+   "truth": "other_insect",
+   "decision": "other_insect",
+   "combined": 0.005647,
+   "note": null,
+   "members": [
+    {
+     "member": "r6_blur",
+     "view": "0°",
+     "p": 0.000743
+    },
+    {
+     "member": "r6_blur",
+     "view": "90°",
+     "p": 0.003609
+    },
+    {
+     "member": "r6_blur",
+     "view": "180°",
+     "p": 0.004274
+    },
+    {
+     "member": "r6_blur",
+     "view": "270°",
+     "p": 0.000688
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "0°",
+     "p": 9e-06
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "90°",
+     "p": 1.9e-05
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "180°",
+     "p": 2.2e-05
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "270°",
+     "p": 0.035809
+    }
+   ]
+  },
+  {
+   "camera": "cam5",
+   "date": "2026-07-12",
+   "split": "final_test",
+   "truth": "other_insect",
+   "decision": "other_insect",
+   "combined": 8e-06,
+   "note": null,
+   "members": [
+    {
+     "member": "r6_blur",
+     "view": "0°",
+     "p": 6e-06
+    },
+    {
+     "member": "r6_blur",
+     "view": "90°",
+     "p": 0.0
+    },
+    {
+     "member": "r6_blur",
+     "view": "180°",
+     "p": 3e-06
+    },
+    {
+     "member": "r6_blur",
+     "view": "270°",
+     "p": 0.0
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "0°",
+     "p": 1e-06
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "90°",
+     "p": 3e-06
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "180°",
+     "p": 1.2e-05
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "270°",
+     "p": 3.8e-05
+    }
+   ]
+  },
+  {
+   "camera": "cam22",
+   "date": "2026-06-15",
+   "split": "final_test",
+   "truth": "other_insect",
+   "decision": "other_insect",
+   "combined": 0.000164,
+   "note": null,
+   "members": [
+    {
+     "member": "r6_blur",
+     "view": "0°",
+     "p": 8.5e-05
+    },
+    {
+     "member": "r6_blur",
+     "view": "90°",
+     "p": 0.000822
+    },
+    {
+     "member": "r6_blur",
+     "view": "180°",
+     "p": 0.00015
+    },
+    {
+     "member": "r6_blur",
+     "view": "270°",
+     "p": 3.8e-05
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "0°",
+     "p": 2e-05
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "90°",
+     "p": 5e-06
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "180°",
+     "p": 6.8e-05
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "270°",
+     "p": 0.000127
+    }
+   ]
+  },
+  {
+   "camera": "cam20",
+   "date": "2026-06-27",
+   "split": "final_test",
+   "truth": "bombus",
+   "decision": "bombus",
+   "combined": 0.717325,
+   "note": "closest call among the correct frames",
+   "members": [
+    {
+     "member": "r6_blur",
+     "view": "0°",
+     "p": 0.894036
+    },
+    {
+     "member": "r6_blur",
+     "view": "90°",
+     "p": 0.360424
+    },
+    {
+     "member": "r6_blur",
+     "view": "180°",
+     "p": 0.874452
+    },
+    {
+     "member": "r6_blur",
+     "view": "270°",
+     "p": 0.688686
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "0°",
+     "p": 0.651266
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "90°",
+     "p": 0.684534
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "180°",
+     "p": 0.688626
+    },
+    {
+     "member": "r6_colour_cam",
+     "view": "270°",
+     "p": 0.896574
+    }
+   ]
+  }
+ ]
+}
