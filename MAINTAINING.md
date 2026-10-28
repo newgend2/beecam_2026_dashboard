@@ -136,9 +136,10 @@ builder, published as `grid.ringLimits`) drive both the ring diagram and the das
 
 `src/data/trigger-precision.json` compares the share of trigger-saved frames that hold any insect, and a Bombus,
 at Emerald Queen and at the clover site. The Emerald Queen figures are weighted estimates from the random test
-cohorts v2–v6 (v1 was reviewed for Bombus only), and the clover figures come from a random review of 286 int8
-trigger frames (`bombus_cascade` scripts/build_trigger_precision_plan.py and scripts/analyze_trigger_precision.py,
-results under runs/timelapse_eval_2026/review_plan/tp_trigger/ on slugger). The file is written by hand from
+cohorts v2–v6 (v1 was reviewed for Bombus only; `bombus_cascade` scripts/analyze_eq_saved_frame_insects.py, results in
+runs/eq_saved_frame_insects/results.json on slugger). The clover figures come from a random review of 286 int8
+trigger frames (scripts/build_trigger_precision_plan.py and scripts/analyze_trigger_precision.py, results under
+runs/timelapse_eval_2026/review_plan/tp_trigger/). The file is written by hand from
 those results. `scripts/validate-precision-data.mjs` checks that the counts and intervals agree.
 
 ## Changing the visit rule
