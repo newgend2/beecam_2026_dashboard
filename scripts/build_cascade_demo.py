@@ -5,7 +5,10 @@ Runs the frozen detector and classifier on CPU (so it never competes with GPU
 training), reading the cascade project and the raw images without writing to
 either. For each image the video shows the full frame with the YOLO insect
 proposal, zooms into the native-resolution crop, then shows the exact 320 px
-classifier input with its Bombus probability against the frozen threshold.
+classifier input with every ensemble member's Bombus probability at every view,
+and their mean against the frozen threshold. Probabilities print as on the Model
+page (fmt): six decimals from 0.999, three below that, scientific notation below
+0.001, so no score reads as a round 0 or 1.
 
   <cascade>/.venv/bin/python scripts/build_cascade_demo.py --ids demo_ids.txt
 """
@@ -22,7 +25,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 CASCADE = Path.home() / "Desktop" / "beecam_2026" / "bombus_cascade"
-PIPELINE = CASCADE / "configs" / "pipelines" / "r4_20261009.json"
+PIPELINE = CASCADE / "configs" / "pipelines" / "r6_20261015.json"
 WORK = ROOT / "demo_work"
 OUTPUT = ROOT / "public" / "model"
 FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
@@ -35,6 +38,31 @@ INK, PAPER, MUTED, LINE = (23, 56, 45), (255, 254, 248), (100, 117, 110), (216, 
 GOLD, GREEN, SLATE = (225, 170, 40), (22, 134, 96), (90, 110, 130)
 
 sys.path.insert(0, str(CASCADE))
+
+
+def from_run(ids: list[str], config: dict, run: Path) -> dict:
+    """Use a frozen evaluation run's cached proposals and member x view scores, so the video shows the exact scores
+    behind the reported metrics."""
+    from pipeline.common import current_manifest, read_manifest, read_boxes, suppress, Box
+
+    cached = json.loads((run / "probabilities.json").read_text())
+    if cached["checkpoints"].keys() != config["classifier"]["checkpoints"].keys():
+        raise SystemExit(f"{run} was not scored with {config['name']}")
+    wanted = set(ids)
+    rows = read_manifest(current_manifest(), keep=lambda r: r["image_id"] in wanted)
+    items = {}
+    for i in ids:
+        proposals = [Box(**b) for b in cached["proposals"][i]]
+        probs = cached["probabilities"][i]
+        scored = [Box(b.cls, b.x, b.y, b.w, b.h, q) for b, q in zip(proposals, probs)]
+        kept = suppress([b for b in scored if b.conf >= config["threshold"]], config["post_classifier_nms_iou"])
+        items[i] = {
+            "path": rows[i]["source_path"], "camera": rows[i]["camera"], "date": rows[i]["date"], "split": rows[i]["split"],
+            "truth": [b.as_dict() for b in read_boxes(rows[i]["label_path"])],
+            "proposals": [b.as_dict() | {"p_bombus": q, "members": d} for b, q, d in zip(proposals, probs, cached["branch_view"][i])],
+            "bombus_detections": [b.as_dict() for b in kept],
+        }
+    return items
 
 
 def run_cascade(ids: list[str], config: dict) -> dict:
@@ -64,10 +92,23 @@ def run_cascade(ids: list[str], config: dict) -> dict:
         items[i] = {
             "path": paths[i], "camera": rows[i]["camera"], "date": rows[i]["date"], "split": rows[i]["split"],
             "truth": [b.as_dict() for b in truth],
-            "proposals": [b.as_dict() | {"p_bombus": p} for b, p in zip(proposals[i], probs)],
+            "proposals": [b.as_dict() | {"p_bombus": p, "members": d} for b, p, d in zip(proposals[i], probs, result["branch_view"][i])],
             "bombus_detections": [b.as_dict() for b in kept],
         }
     return items
+
+
+def fmt(p: float) -> str:
+    """As the Model page prints scores, so none reads as a round 0 or 1: six decimals from 0.999, three decimals
+    below that, scientific notation below 0.001. Scores are stored to six decimals, so a stored 1 or 0 is shown as
+    beyond that precision."""
+    if p >= 1.0:
+        return ">0.999999"
+    if p >= 0.999:
+        return f"{p:.6f}"
+    if p >= 0.001:
+        return f"{p:.3f}"
+    return f"{p:.1e}" if p > 0 else "<0.000001"
 
 
 def font(size: int, bold: bool = False):
@@ -144,7 +185,7 @@ def render(items: dict, ids: list[str], config: dict, frames_dir: Path) -> int:
         crop_image, _ = crop(image, fbox)
         p = focus["p_bombus"]
         is_bombus = bool(item["bombus_detections"])
-        where = f"Camera {item['camera'].replace('cam', '')} · {item['date']} · image {n} of {len(ids)}"
+        where = f"Camera {item['camera'].replace('cam', '')} · {item['date']} · image {n} of {len(ids)}" + (f" · {item['note']}" if item.get("note") else "")
 
         def to_view(xy):
             return (view[0] + xy[0] * scale, view[1] + xy[1] * scale)
@@ -208,15 +249,27 @@ def render(items: dict, ids: list[str], config: dict, frames_dir: Path) -> int:
             d.text((panel_x, 424), "320 px classifier input (pad to square)", font=font(14), fill=MUTED)
             t = ease((f - FPS * 0.3) / (FPS * 1.2))
             bar = (panel_x, 470, panel_x + 384, 500)
-            d.text((panel_x, 446), "P(Bombus)", font=font(17, True), fill=INK)
+            d.text((panel_x, 446), "P(Bombus), ensemble mean", font=font(17, True), fill=INK)
             d.rounded_rectangle(bar, 8, fill=(232, 236, 228))
             if t > 0:
                 d.rounded_rectangle((bar[0], bar[1], bar[0] + max(16, (bar[2] - bar[0]) * p * t), bar[3]), 8,
                                     fill=verdict_colour)
             tx = bar[0] + (bar[2] - bar[0]) * threshold
             d.line((tx, bar[1] - 6, tx, bar[3] + 6), fill=INK, width=3)
-            d.text((tx - 40, bar[3] + 8), f"threshold {threshold:.2f}", font=font(13), fill=MUTED)
-            d.text((bar[2] - 56, 446), f"{p * t:.2f}", font=font(17, True), fill=INK)
+            d.text((tx - 44, bar[3] + 8), f"threshold {threshold:.3f}", font=font(13), fill=MUTED)
+            d.text((bar[2] - 60, 446), fmt(p) if t >= 1 else fmt(p * t), font=font(17, True), fill=INK)
+            y = 96
+            members = focus.get("members") or {}
+            names = sorted({k.rsplit("_", 1)[0] for k in members})
+            for name in names:
+                d.text((panel_x + 334, y), name.replace("r6_", "").replace("colour", "color"), font=font(14, True), fill=INK)
+                y += 20
+                for v in sorted(int(k.rsplit("_", 1)[1]) for k in members if k.rsplit("_", 1)[0] == name):
+                    d.text((panel_x + 334, y), f"{90 * v:>3}°  {fmt(members[f'{name}_{v}'])}", font=font(13), fill=MUTED)
+                    y += 18
+                y += 8
+            if names:
+                d.text((panel_x + 334, y), f"mean of {len(members)}", font=font(13, True), fill=INK)
             if f >= FPS * 1.6:
                 label = "Bombus" if is_bombus else "Other insect"
                 d.rounded_rectangle((panel_x, 560, panel_x + 384, 630), 14, fill=verdict_colour)
@@ -225,21 +278,36 @@ def render(items: dict, ids: list[str], config: dict, frames_dir: Path) -> int:
     return count
 
 
+def focus_of(item: dict) -> dict:
+    """The proposal the video zooms into: the most Bombus-like of those drawn (as in render)."""
+    shown = [p for p in item["proposals"] if p["conf"] >= DISPLAY_CONF] or sorted(item["proposals"], key=lambda p: -p["conf"])[:1]
+    return max(shown, key=lambda p: p["p_bombus"])
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--ids", type=Path, required=True, help="one image_id per line, in video order")
     parser.add_argument("--pipeline", type=Path, default=PIPELINE)
     parser.add_argument("--score-only", action="store_true", help="run the cascade and stop before rendering")
+    parser.add_argument("--from-run", type=Path, help="bombus_cascade run folder (probabilities.json) to take scores from "
+                        "instead of rerunning the cascade on the CPU")
     args = parser.parse_args()
-    ids = [line.split()[0] for line in args.ids.read_text().splitlines() if line.strip()]
+    lines = [line.split(maxsplit=1) for line in args.ids.read_text().splitlines() if line.strip() and not line.startswith("#")]
+    ids = [parts[0] for parts in lines]
+    notes = {parts[0]: parts[1].strip() for parts in lines if len(parts) > 1}
     config = json.loads(args.pipeline.read_text())
     WORK.mkdir(exist_ok=True)
     results_path = WORK / "cascade_results.json"
-    items = json.loads(results_path.read_text()) if results_path.exists() else {}
-    missing = [i for i in ids if i not in items]
-    if missing:
-        items.update(run_cascade(missing, config))
-        results_path.write_text(json.dumps(items, indent=1))
+    if args.from_run:
+        items = from_run(ids, config, args.from_run)
+    else:
+        items = json.loads(results_path.read_text()) if results_path.exists() else {}
+        missing = [i for i in ids if i not in items]
+        if missing:
+            items.update(run_cascade(missing, config))
+            results_path.write_text(json.dumps(items, indent=1))
+    for i, note in notes.items():
+        items[i]["note"] = note
     for i in ids:
         best = max((p["p_bombus"] for p in items[i]["proposals"]), default=0)
         truth = "bombus" if any(b["cls"] == 0 for b in items[i]["truth"]) else "other"
@@ -258,11 +326,15 @@ def main() -> int:
     subprocess.run(["convert", str(WORK / "poster.png"), "-quality", "82", str(OUTPUT / "cascade_demo_poster.webp")],
                    check=True)
     summary = {"pipeline": config["name"], "pipeline_sha256": __import__("hashlib").sha256(args.pipeline.read_bytes()).hexdigest(),
-               "device": "cpu (detector half=False)", "frames": frames, "fps": FPS,
+               "scores": f"cached frozen evaluation run {args.from_run.name}" if args.from_run else "cpu rerun (detector half=False)",
+               "frames": frames, "fps": FPS,
+               "threshold": config["threshold"],
                "images": [{"camera": items[i]["camera"], "date": items[i]["date"], "split": items[i]["split"],
                            "truth": "bombus" if any(b["cls"] == 0 for b in items[i]["truth"]) else "other_insect",
                            "decision": "bombus" if items[i]["bombus_detections"] else "other_insect",
-                           "p_bombus": max((p["p_bombus"] for p in items[i]["proposals"]), default=0)} for i in ids]}
+                           "combined": focus_of(items[i])["p_bombus"], "note": items[i].get("note"),
+                           "members": [{"member": k.rsplit("_", 1)[0], "view": f"{90 * int(k.rsplit('_', 1)[1])}°", "p": v}
+                                       for k, v in sorted(focus_of(items[i]).get("members", {}).items())]} for i in ids]}
     (OUTPUT / "cascade_demo.json").write_text(json.dumps(summary, indent=2) + "\n")
     print(json.dumps({k: v for k, v in summary.items() if k != "images"}))
     return 0
