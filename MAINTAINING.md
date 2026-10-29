@@ -69,6 +69,11 @@ The demo shows round 6 (`r6_20261015`) on held-out test cohort v6 frames the cas
 frozen evaluation run, so the video matches the reported metrics; without it the cascade reruns on the CPU.
 `build_cascade_stages.py` writes `src/data/cascade-stages.json`: the detector alone, each ensemble member alone
 and the ensemble, on development and test v6, plus the demo examples.
+The Model tab draws its stage sections from that file (`src/components/CascadeStages.tsx`), and
+`scripts/validate-cascade-stages.mjs` checks that every row counts the same human boxes, that the ensemble's held-out
+counts match the results table in `model-stats.json`, and that each example's mean is the mean of its eight stored
+scores. Scores are stored to six decimals, as the frozen evaluation writes them, and both the page and the video print
+them so that none reads as a flat 0 or 1.
 
 The model tab's other figures live in `src/data/model-stats.json`, each with its source.
 The frames-recorded total there (also on the Overview) is an exact count of the transferred

@@ -2430,6 +2430,269 @@ footer a:hover {
   background: #f6e4b5;
 }
 
+/* Cascade stages on the Model tab */
+
+.ensemble-flow {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 28px;
+  margin: 0 0 22px;
+  padding: 0;
+  list-style: none;
+}
+
+.ensemble-flow li {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 4px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #f4f6ef;
+}
+
+.ensemble-flow li + li::before {
+  position: absolute;
+  top: 50%;
+  left: -22px;
+  color: var(--muted);
+  content: '→';
+  font-size: 16px;
+  transform: translateY(-50%);
+}
+
+.ensemble-flow strong {
+  font-size: 14px;
+}
+
+.ensemble-flow span {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.ensemble-members {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 26px;
+}
+
+.ensemble-members article {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.ensemble-members h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+
+.ensemble-members p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.ensemble-subhead {
+  margin: 28px 0 12px;
+  font-size: 15px;
+}
+
+.ensemble-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.ensemble-picker button {
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: 99px;
+  color: var(--muted);
+  background: transparent;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ensemble-picker button:hover {
+  color: var(--ink);
+}
+
+.ensemble-picker button.is-active {
+  border-color: var(--ink);
+  color: var(--paper);
+  background: var(--ink);
+}
+
+.ensemble-example {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 24px;
+}
+
+.ensemble-strip {
+  padding: 0 8px;
+}
+
+.ensemble-plot {
+  position: relative;
+  display: grid;
+  gap: 14px;
+  padding-top: 24px;
+}
+
+.ensemble-strip-row {
+  display: grid;
+  gap: 5px;
+}
+
+.ensemble-row-label {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ensemble-track {
+  position: relative;
+  height: 14px;
+  border-radius: 3px;
+  background: #e3e9e4;
+}
+
+.ensemble-threshold {
+  position: absolute;
+  top: 18px;
+  bottom: -6px;
+  border-left: 2px dashed var(--red);
+}
+
+.ensemble-threshold b {
+  position: absolute;
+  top: -18px;
+  left: 0;
+  color: var(--red-dark);
+  font-size: 11px;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+
+.ensemble-dot,
+.ensemble-mean {
+  position: absolute;
+  top: 1px;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border: 2px solid var(--paper);
+  border-radius: 50%;
+}
+
+.ensemble-dot--a {
+  background: rgb(7 85 60 / 85%);
+}
+
+.ensemble-dot--b {
+  background: rgb(225 170 40 / 90%);
+}
+
+.ensemble-mean {
+  top: -1px;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
+  border-radius: 2px;
+  transform: rotate(45deg);
+}
+
+.ensemble-mean--bombus {
+  background: var(--green);
+}
+
+.ensemble-mean--other {
+  background: var(--ink);
+}
+
+.ensemble-axis {
+  position: relative;
+  height: 22px;
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.ensemble-axis span {
+  position: absolute;
+  top: 4px;
+  transform: translateX(-50%);
+}
+
+.ensemble-key {
+  display: inline-block;
+  flex: none;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.ensemble-key--a {
+  background: var(--green-dark);
+}
+
+.ensemble-key--b {
+  background: var(--gold);
+}
+
+.ensemble-key--mean {
+  width: 9px;
+  height: 9px;
+  border-radius: 1px;
+  background: var(--green);
+  transform: rotate(45deg);
+}
+
+.ensemble-table td {
+  font-variant-numeric: tabular-nums;
+}
+
+.results-table tr.is-total th,
+.results-table tr.is-total td {
+  font-weight: 700;
+  background: #f4f6ef;
+}
+
+@media (max-width: 1050px) {
+  .ensemble-flow {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .ensemble-flow li + li::before {
+    top: -19px;
+    left: 18px;
+    content: '↓';
+    transform: none;
+  }
+
+  .ensemble-example {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .ensemble-members {
+    grid-template-columns: 1fr;
+  }
+}
+
 .source-notes {
   padding: 20px 24px;
   border: 1px solid #d3dcd5;

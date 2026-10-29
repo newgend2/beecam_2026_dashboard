@@ -1,6 +1,7 @@
 import { visitGapAdjective } from '../data/visitRule'
 import modelStats from '../data/model-stats.json'
 import { assetUrl, positiveSummary } from '../data/positives'
+import { DetectorStage, EnsembleStage, stagesSource } from '../components/CascadeStages'
 
 interface ResultRow {
   label: string
@@ -31,7 +32,7 @@ const steps = [
   },
   {
     title: 'Round 6',
-    body: 'Each round added hard examples from human review. Round 6 trained its classifiers on the curated visits, with blur augmentation and colour and camera cues, and is the pipeline that now screens new cards. The remaining errors are mostly blurry, fast-moving insects and boxes that only partly cover a bee.',
+    body: 'Each round added hard examples from human review. Round 6 trained its classifiers on the curated visits, with blur augmentation and color and camera cues, and is the pipeline that now screens new cards. The remaining errors are mostly blurry, fast-moving insects and boxes that only partly cover a bee.',
   },
 ]
 
@@ -103,15 +104,18 @@ export function ModelPage() {
             loop
             muted
             playsInline
-            aria-label="Demonstration of the two-stage model on four Bombus and four other-insect frames"
+            aria-label="Demonstration of the round 6 cascade on nine held-out frames, with the real score from each classifier at each rotation"
           />
         </div>
         <p className="demo-caption">
-          Eight sharp 2026 frames, four with Bombus and four with other insects, run through the frozen
-          round 4 pipeline. The detector proposes each insect in the full frame, the proposal is cut
-          at native resolution, and the classifier's Bombus probability is compared with the frozen
-          threshold. These examples were chosen for clarity and are not an accuracy measure; see the
-          results below.
+          Nine frames from the held-out test cohort v6 run through the frozen round 6 pipeline. Four
+          Bombus and four other insects were drawn at random from the frames the cascade got right,
+          and the ninth is its closest correct call. The detector proposes each insect in the full
+          frame, the proposal is cut at native resolution, and the mean Bombus probability of the two
+          classifiers at four rotations is compared with the threshold. Every score shown is the value
+          stored by the frozen evaluation, so a clear bee reads just under 1 and a clear non-bee just
+          above 0, never a rounded 100% or 0%. The examples are not an accuracy measure, which the
+          results below give.
         </p>
       </section>
 
@@ -152,6 +156,9 @@ export function ModelPage() {
         </p>
       </section>
 
+      <DetectorStage />
+      <EnsembleStage />
+
       <section className="source-notes" aria-label="Data sources">
         <p className="eyebrow">Where these numbers come from</p>
         <ul>
@@ -159,6 +166,7 @@ export function ModelPage() {
           <li><strong>Human-reviewed images.</strong> {modelStats.humanReviewed.source}</li>
           <li><strong>Confirmed Bombus frames and visits.</strong> {modelStats.confirmedBombus.source}</li>
           <li><strong>Results.</strong> {modelStats.resultsSource}</li>
+          <li><strong>Each stage alone and the example scores.</strong> {stagesSource}</li>
         </ul>
       </section>
     </main>

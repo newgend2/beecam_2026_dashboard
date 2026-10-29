@@ -141,7 +141,7 @@ describe('BeeCam dashboard', () => {
     const summary = screen.getByLabelText('Model data summary')
     expect(within(summary).getByText('3,654,917')).toBeInTheDocument()
     expect(within(summary).getByText('6,134')).toBeInTheDocument()
-    expect(screen.getByLabelText(/Demonstration of the two-stage model/)).toHaveAttribute(
+    expect(screen.getByLabelText(/Demonstration of the round 6 cascade/)).toHaveAttribute(
       'src',
       expect.stringContaining('model/cascade_demo.mp4'),
     )
